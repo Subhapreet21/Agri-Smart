@@ -64,8 +64,25 @@ def preprocess_features(input_features):
         NumPy array of preprocessed features
     """
     # Get the feature values in the correct order
-    feature_names = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']
-    X = np.array([[input_features[feature] for feature in feature_names]])
+    feature_names = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall', 
+                    'Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
+    
+    # Set default values for new features if not provided in input
+    default_values = {
+        'Salinity_dS_m': 2.0,  # Default salinity
+        'Water_Requirement': 400.0,  # Default water requirement
+        'Disease_Resistance_Score': 5.0  # Default disease resistance score
+    }
+    
+    # For each feature, use the provided value or the default
+    feature_values = []
+    for feature in feature_names:
+        if feature in input_features:
+            feature_values.append(input_features[feature])
+        else:
+            feature_values.append(default_values.get(feature, 0))
+    
+    X = np.array([feature_values])
     
     return X
 
@@ -80,7 +97,8 @@ def extract_crop_parameter_ranges(df):
         Dictionary with parameter ranges for each crop
     """
     crops = df['Label'].unique()
-    parameters = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']
+    parameters = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall', 
+                 'Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
     
     crop_ranges = {}
     

@@ -387,6 +387,22 @@ def display_crop_recommendation(df, model):
             ph_value = st.number_input("pH Value", min_value=3.0, max_value=10.0, value=6.5, step=0.1,
                                       help="pH value of soil (1-14)")
         
+        # Advanced parameters expander
+        with st.expander("Advanced Parameters", expanded=False):
+            adv_col1, adv_col2, adv_col3 = st.columns(3)
+            
+            with adv_col1:
+                salinity_value = st.number_input("Salinity (dS/m)", min_value=0.0, max_value=10.0, value=2.0, step=0.1,
+                                           help="Soil salinity in dS/m")
+            
+            with adv_col2:
+                water_req_value = st.number_input("Water Requirement (mm)", min_value=50.0, max_value=800.0, value=400.0, step=10.0,
+                                           help="Water requirement in mm")
+            
+            with adv_col3:
+                disease_resistance = st.number_input("Disease Resistance Score", min_value=1.0, max_value=10.0, value=5.0, step=0.1,
+                                           help="Disease resistance score (1-10)")
+                
         # Create a dictionary of input features
         input_features = {
             'N': n_value,
@@ -395,7 +411,10 @@ def display_crop_recommendation(df, model):
             'Temperature': temp_value,
             'Humidity': humidity_value,
             'pH': ph_value,
-            'Rainfall': rainfall_value
+            'Rainfall': rainfall_value,
+            'Salinity_dS_m': salinity_value,
+            'Water_Requirement': water_req_value,
+            'Disease_Resistance_Score': disease_resistance
         }
         
         # Button to predict with modern styling
@@ -427,13 +446,32 @@ def display_crop_recommendation(df, model):
             predicted_crop = results['predicted_crop']
             crop_info = results['crop_info']
             
-            # Display the predicted crop with modern styling
+            # Display the top 3 recommended crops with modern styling
             st.markdown(f"""
             <div class="card" style="background: linear-gradient(to right, #f0fdf4, #dcfce7); border-left: 4px solid #16a34a;">
-                <h3 style="color: #166534; font-weight: 600; margin-bottom: 5px;">Recommended Crop</h3>
-                <p style="font-size: 1.5rem; font-weight: 700; color: #16a34a; margin: 10px 0;">🌱 {predicted_crop}</p>
+                <h3 style="color: #166534; font-weight: 600; margin-bottom: 5px;">Top 3 Recommended Crops</h3>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Get top 3 crops
+            top_crops = list(results['probabilities'].items())[:3]
+            
+            # Create medal emoji for rankings
+            medals = ["🥇", "🥈", "🥉"]
+            
+            # Display top 3 crops
+            for i, (crop, prob) in enumerate(top_crops):
+                st.markdown(f"""
+                <div class="card" style="margin-top: 10px; background: {'#f0fdf4' if i == 0 else 'white'}; border-left: {4 if i == 0 else 2}px solid {'#16a34a' if i == 0 else '#84cc16'};">
+                    <h4 style="color: #166534; margin-bottom: 5px; font-size: {'1.3rem' if i == 0 else '1.1rem'};">
+                        {medals[i]} {crop}
+                    </h4>
+                    <p style="color: #4b5563; margin: 0;">Confidence: {prob*100:.1f}%</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Set the predicted crop to the top crop for other sections
+            predicted_crop = top_crops[0][0]
             
             # Display crop information
             if crop_info:

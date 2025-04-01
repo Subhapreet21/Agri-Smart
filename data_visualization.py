@@ -325,8 +325,10 @@ def display_feature_importance():
     # For demonstration, we use static feature importance values
     # In a real implementation, these would come from the trained model
     
-    features = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']
-    importance = [0.18, 0.15, 0.17, 0.21, 0.12, 0.08, 0.09]  # Example values
+    # Extended features including new ones
+    features = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall', 
+                'Disease_Resistance_Score', 'Water_Requirement', 'Salinity_dS_m']
+    importance = [0.16, 0.14, 0.15, 0.18, 0.10, 0.07, 0.08, 0.05, 0.04, 0.03]  # Example values
     
     # Convert feature abbreviations to full names for better understanding
     feature_names = {
@@ -336,7 +338,10 @@ def display_feature_importance():
         'Temperature': 'Temperature',
         'Humidity': 'Humidity',
         'pH': 'Soil pH',
-        'Rainfall': 'Rainfall'
+        'Rainfall': 'Rainfall',
+        'Disease_Resistance_Score': 'Disease Resistance',
+        'Water_Requirement': 'Water Requirement',
+        'Salinity_dS_m': 'Soil Salinity'
     }
     
     # Add explanations for each feature
@@ -347,34 +352,109 @@ def display_feature_importance():
         'Temperature': 'Different crops need different temperature ranges',
         'Humidity': 'Affects transpiration and disease susceptibility',
         'pH': 'Determines nutrient availability in soil',
-        'Rainfall': 'Water availability for plant growth'
+        'Rainfall': 'Water availability for plant growth',
+        'Disease_Resistance_Score': 'Natural ability to resist common diseases',
+        'Water_Requirement': 'Amount of water needed for optimal growth',
+        'Salinity_dS_m': 'Tolerance to salt content in soil'
     }
     
-    # Create a simple header and explanation
+    # Create a simple header with modern styling
     st.markdown("""
-    ### What Makes a Crop Grow Well?
+    <div class="card" style="margin-bottom: 25px;">
+        <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 10px;">What Makes a Crop Grow Well?</h3>
+        <p style="margin: 0; color: #4b5563;">Different factors affect crop growth in different ways. Some are more important than others.
+        This visualization shows how important each factor is for deciding which crop to plant.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    Different factors affect crop growth in different ways. Some are more important than others.
-    This chart shows how important each factor is for deciding which crop to plant.
-    """)
+    # Create tabs for different visualizations
+    imp_tab1, imp_tab2 = st.tabs(["Interactive Chart", "Detailed Explanation"])
     
-    # Create simple bar chart with clear colors and labels
-    fig = px.bar(
-        x=[feature_names[f] for f in features],
-        y=importance,
-        color=importance,
-        color_continuous_scale='RdYlGn',  # Red to Yellow to Green scale
-        labels={'x': 'Growing Factor', 'y': 'Importance (higher is more important)'},
-        title='How Important Each Factor Is for Crop Selection'
-    )
-    
-    fig.update_layout(
-        xaxis_title='Growing Factor',
-        yaxis_title='Importance',
-        height=450
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
+    with imp_tab1:
+        # Create feature importance data
+        importance_data = pd.DataFrame({
+            'Feature': [feature_names[f] for f in features],
+            'Importance': importance,
+            'Description': [feature_explanations[f] for f in features]
+        })
+        
+        # Sort by importance for better visualization
+        importance_data = importance_data.sort_values('Importance', ascending=False)
+        
+        # Create a more modern interactive chart 
+        fig = px.bar(
+            importance_data,
+            y='Feature',
+            x='Importance',
+            color='Importance',
+            color_continuous_scale='Viridis',
+            labels={'Feature': 'Growing Factor', 'Importance': 'Importance Score'},
+            title='Factor Importance for Crop Selection',
+            orientation='h',  # horizontal bars for better readability with many features
+            hover_data=['Description']
+        )
+        
+        fig.update_layout(
+            yaxis=dict(title=''),
+            xaxis=dict(title='Importance Score'),
+            height=500,
+            margin=dict(l=20, r=20, t=50, b=20)
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        st.markdown("""
+        <div style="margin-top: 10px; padding: 10px; background-color: #f0fdf4; border-radius: 5px;">
+            <p style="margin: 0; color: #16a34a; font-weight: 500;">💡 Hover over bars to see descriptions</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with imp_tab2:
+        # Create a more detailed explanation of factors with modern styling
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Understanding Growing Factors</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Create two columns for the factors
+        col1, col2 = st.columns(2)
+        
+        # Distribute the factors between the columns
+        sorted_features = sorted(features, key=lambda x: importance[features.index(x)], reverse=True)
+        half = len(sorted_features) // 2
+        
+        with col1:
+            for f in sorted_features[:half]:
+                idx = features.index(f)
+                st.markdown(f"""
+                <div class="card" style="margin-bottom: 15px;">
+                    <h4 style="color: #166534; font-size: 1rem; margin-bottom: 5px;">{feature_names[f]}</h4>
+                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                        <div style="flex-grow: 1; background-color: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background-color: #16a34a; width: {importance[idx]*100}%; height: 100%;"></div>
+                        </div>
+                        <div style="margin-left: 10px; font-weight: 500; color: #16a34a;">{importance[idx]:.2f}</div>
+                    </div>
+                    <p style="margin: 5px 0 0; color: #4b5563; font-size: 0.9rem;">{feature_explanations[f]}</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        with col2:
+            for f in sorted_features[half:]:
+                idx = features.index(f)
+                st.markdown(f"""
+                <div class="card" style="margin-bottom: 15px;">
+                    <h4 style="color: #166534; font-size: 1rem; margin-bottom: 5px;">{feature_names[f]}</h4>
+                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                        <div style="flex-grow: 1; background-color: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background-color: #16a34a; width: {importance[idx]*100}%; height: 100%;"></div>
+                        </div>
+                        <div style="margin-left: 10px; font-weight: 500; color: #16a34a;">{importance[idx]:.2f}</div>
+                    </div>
+                    <p style="margin: 5px 0 0; color: #4b5563; font-size: 0.9rem;">{feature_explanations[f]}</p>
+                </div>
+                """, unsafe_allow_html=True)
     
     # Add a simple explanation of what these values mean
     st.markdown("""
@@ -547,48 +627,60 @@ def display_feature_importance():
         st.plotly_chart(fig_comparison, use_container_width=True)
         
         st.divider()
-        st.subheader("Crop Parameter Radar Chart")
-        st.write("This radar chart shows the normalized crop requirements for easy comparison. Each parameter is scaled from 0 to 1, where 1 represents the highest value among the selected crops.")
+        st.subheader("Crop Parameter Parallel Coordinates")
+        st.write("This parallel coordinates plot allows you to see how each crop performs across multiple parameters simultaneously. It helps visualize the relationships between different crop requirements.")
         
-        # Create radar chart for comparison
-        fig_radar = go.Figure()
-        
+        # Create a DataFrame suitable for parallel coordinates plot
+        parallel_data = []
         for crop in selected_crops:
-            values = [crop_data[crop][param] for param in selected_params]
-            # Normalize values for better visualization
-            max_values = [max([crop_data[c][param] for c in selected_crops]) for param in selected_params]
-            normalized_values = [values[i]/max_values[i] for i in range(len(values))]
-            
-            fig_radar.add_trace(go.Scatterpolar(
-                r=normalized_values,
-                theta=selected_params,
-                fill='toself',
-                name=crop
-            ))
+            crop_row = {'Crop': crop}
+            for param in selected_params:
+                crop_row[param] = crop_data[crop][param]
+            parallel_data.append(crop_row)
         
-        fig_radar.update_layout(
-            polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, 1]
-                ),
-                angularaxis=dict(
-                    tickfont=dict(size=12, family="Arial, sans-serif"),
-                    rotation=45,
-                )
-            ),
-            title="Comparative Crop Requirements (Normalized)",
-            height=550,
-            showlegend=True,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=-0.2,
-                xanchor="center",
-                x=0.5,
-                font=dict(size=12)
-            ),
-            margin=dict(t=80, b=80)
+        df_parallel = pd.DataFrame(parallel_data)
+        
+        # Create parallel coordinates plot
+        fig_parallel = px.parallel_coordinates(
+            df_parallel,
+            color="Crop",
+            labels={col: col for col in df_parallel.columns},
+            color_continuous_scale=px.colors.diverging.Tealrose,
+            color_continuous_midpoint=2,
+            title="Crop Parameters Comparison - Parallel Coordinates",
         )
         
-        st.plotly_chart(fig_radar, use_container_width=True)
+        fig_parallel.update_layout(
+            font=dict(size=12),
+            height=550,
+            margin=dict(l=80, r=80, t=80, b=50),
+        )
+        
+        st.plotly_chart(fig_parallel, use_container_width=True)
+        
+        # Add interactive heatmap for correlation between parameters
+        st.divider()
+        st.subheader("Parameter Correlation Heatmap")
+        st.write("This heatmap shows the correlation between different parameters across the selected crops.")
+        
+        # Prepare correlation data
+        if len(selected_params) > 1:
+            corr_data = df_parallel.drop('Crop', axis=1).corr().round(2)
+            
+            # Create heatmap
+            fig_heatmap = px.imshow(
+                corr_data,
+                text_auto=True,
+                color_continuous_scale='RdBu_r',
+                aspect="auto",
+                title="Parameter Correlation Heatmap"
+            )
+            
+            fig_heatmap.update_layout(
+                height=400,
+                margin=dict(l=60, r=60, t=80, b=50)
+            )
+            
+            st.plotly_chart(fig_heatmap, use_container_width=True)
+            
+            st.info("💡 **How to read this:** Values closer to 1 mean strong positive correlation (parameters increase together), values closer to -1 mean strong negative correlation (as one increases, the other decreases), and values close to 0 mean little to no correlation.")

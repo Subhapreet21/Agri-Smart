@@ -14,8 +14,9 @@ def train_crop_recommendation_model():
     # Load the crop dataset
     df = load_crop_data()
     
-    # Features and target
-    X = df[['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']]
+    # Features and target - using all available soil and environmental parameters
+    X = df[['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall', 
+           'Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']]
     y = df['Label']
     
     # Split the dataset
