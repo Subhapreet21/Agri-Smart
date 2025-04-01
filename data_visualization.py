@@ -484,14 +484,23 @@ def display_feature_importance():
     col1, col2 = st.columns(2)
     
     with col1:
-        # Sample crop data for demonstration
+        # Comprehensive crop data for visualization
         crop_data = {
-            'Rice': {'N': 80, 'P': 40, 'K': 40, 'Temperature': 25, 'pH': 6.5, 'Water': 'High'},
-            'Wheat': {'N': 60, 'P': 30, 'K': 30, 'Temperature': 20, 'pH': 7.0, 'Water': 'Medium'},
-            'Maize': {'N': 70, 'P': 35, 'K': 40, 'Temperature': 23, 'pH': 6.8, 'Water': 'Medium'},
-            'Potato': {'N': 90, 'P': 45, 'K': 60, 'Temperature': 18, 'pH': 6.0, 'Water': 'Medium-High'},
-            'Cotton': {'N': 50, 'P': 25, 'K': 25, 'Temperature': 28, 'pH': 6.2, 'Water': 'Low-Medium'},
-            'Sugarcane': {'N': 100, 'P': 50, 'K': 50, 'Temperature': 27, 'pH': 6.5, 'Water': 'High'}
+            'Rice': {'N': 80, 'P': 40, 'K': 40, 'Temperature': 25, 'pH': 6.5, 'Humidity': 80, 'Rainfall': 200},
+            'Wheat': {'N': 60, 'P': 30, 'K': 30, 'Temperature': 20, 'pH': 7.0, 'Humidity': 65, 'Rainfall': 100},
+            'Maize': {'N': 70, 'P': 35, 'K': 40, 'Temperature': 23, 'pH': 6.8, 'Humidity': 70, 'Rainfall': 150},
+            'Potato': {'N': 90, 'P': 45, 'K': 60, 'Temperature': 18, 'pH': 6.0, 'Humidity': 75, 'Rainfall': 120},
+            'Cotton': {'N': 50, 'P': 25, 'K': 25, 'Temperature': 28, 'pH': 6.2, 'Humidity': 60, 'Rainfall': 80},
+            'Sugarcane': {'N': 100, 'P': 50, 'K': 50, 'Temperature': 27, 'pH': 6.5, 'Humidity': 85, 'Rainfall': 220},
+            'Tomato': {'N': 85, 'P': 45, 'K': 55, 'Temperature': 24, 'pH': 6.3, 'Humidity': 70, 'Rainfall': 90},
+            'Barley': {'N': 55, 'P': 25, 'K': 35, 'Temperature': 19, 'pH': 6.8, 'Humidity': 60, 'Rainfall': 110},
+            'Soybean': {'N': 65, 'P': 40, 'K': 40, 'Temperature': 22, 'pH': 6.5, 'Humidity': 70, 'Rainfall': 130},
+            'Cabbage': {'N': 75, 'P': 35, 'K': 45, 'Temperature': 17, 'pH': 6.2, 'Humidity': 75, 'Rainfall': 100},
+            'Onion': {'N': 70, 'P': 40, 'K': 45, 'Temperature': 20, 'pH': 6.5, 'Humidity': 65, 'Rainfall': 90},
+            'Turmeric': {'N': 60, 'P': 30, 'K': 35, 'Temperature': 25, 'pH': 6.3, 'Humidity': 80, 'Rainfall': 180},
+            'Chilly': {'N': 75, 'P': 35, 'K': 40, 'Temperature': 26, 'pH': 6.5, 'Humidity': 70, 'Rainfall': 100},
+            'Okra': {'N': 65, 'P': 35, 'K': 40, 'Temperature': 25, 'pH': 6.7, 'Humidity': 75, 'Rainfall': 120},
+            'Sunflower': {'N': 55, 'P': 35, 'K': 30, 'Temperature': 24, 'pH': 6.8, 'Humidity': 60, 'Rainfall': 90}
         }
         
         selected_crops = st.multiselect(
@@ -504,7 +513,7 @@ def display_feature_importance():
         # Select parameters to compare
         selected_params = st.multiselect(
             "Select parameters to compare",
-            options=['N', 'P', 'K', 'Temperature', 'pH'],
+            options=['N', 'P', 'K', 'Temperature', 'pH', 'Humidity', 'Rainfall'],
             default=['N', 'P', 'K']
         )
     
@@ -537,6 +546,10 @@ def display_feature_importance():
         fig_comparison.update_layout(height=400)
         st.plotly_chart(fig_comparison, use_container_width=True)
         
+        st.divider()
+        st.subheader("Crop Parameter Radar Chart")
+        st.write("This radar chart shows the normalized crop requirements for easy comparison. Each parameter is scaled from 0 to 1, where 1 represents the highest value among the selected crops.")
+        
         # Create radar chart for comparison
         fig_radar = go.Figure()
         
@@ -558,11 +571,24 @@ def display_feature_importance():
                 radialaxis=dict(
                     visible=True,
                     range=[0, 1]
+                ),
+                angularaxis=dict(
+                    tickfont=dict(size=12, family="Arial, sans-serif"),
+                    rotation=45,
                 )
             ),
             title="Comparative Crop Requirements (Normalized)",
-            height=500,
-            showlegend=True
+            height=550,
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.2,
+                xanchor="center",
+                x=0.5,
+                font=dict(size=12)
+            ),
+            margin=dict(t=80, b=80)
         )
         
         st.plotly_chart(fig_radar, use_container_width=True)
