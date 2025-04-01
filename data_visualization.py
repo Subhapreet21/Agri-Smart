@@ -641,22 +641,32 @@ def display_feature_importance():
         df_parallel = pd.DataFrame(parallel_data)
         
         # Create parallel coordinates plot
-        fig_parallel = px.parallel_coordinates(
-            df_parallel,
-            color="Crop",
-            labels={col: col for col in df_parallel.columns},
-            color_continuous_scale=px.colors.diverging.Tealrose,
-            color_continuous_midpoint=2,
-            title="Crop Parameters Comparison - Parallel Coordinates",
-        )
+        # Initialize fig_parallel to avoid 'unbound' error
+        fig_parallel = None
         
-        fig_parallel.update_layout(
-            font=dict(size=12),
-            height=550,
-            margin=dict(l=80, r=80, t=80, b=50),
-        )
-        
-        st.plotly_chart(fig_parallel, use_container_width=True)
+        # Use a numeric column for color to avoid errors with categorical data
+        if len(df_parallel) > 0:
+            # Add an index column for coloring
+            df_parallel['index'] = range(len(df_parallel))
+            
+            fig_parallel = px.parallel_coordinates(
+                df_parallel,
+                color="index",
+                labels={col: col for col in df_parallel.columns if col != 'index'},
+                color_continuous_scale=px.colors.diverging.Tealrose,
+                color_continuous_midpoint=len(df_parallel) // 2,
+                title="Crop Parameters Comparison - Parallel Coordinates",
+            )
+            
+            fig_parallel.update_layout(
+                font=dict(size=12),
+                height=550,
+                margin=dict(l=80, r=80, t=80, b=50),
+            )
+            
+            st.plotly_chart(fig_parallel, use_container_width=True)
+        else:
+            st.info("Select at least one crop and parameter to see the comparison.")
         
         # Add interactive heatmap for correlation between parameters
         st.divider()
@@ -665,7 +675,12 @@ def display_feature_importance():
         
         # Prepare correlation data
         if len(selected_params) > 1:
-            corr_data = df_parallel.drop('Crop', axis=1).corr().round(2)
+            # Drop non-numeric columns
+            cols_to_drop = ['Crop']
+            if 'index' in df_parallel.columns:
+                cols_to_drop.append('index')
+            
+            corr_data = df_parallel.drop(columns=cols_to_drop, errors='ignore').corr().round(2)
             
             # Create heatmap
             fig_heatmap = px.imshow(

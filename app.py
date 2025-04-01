@@ -716,7 +716,7 @@ def display_data_insights(df):
     """, unsafe_allow_html=True)
     
     # Modern tabs using Streamlit's tab component
-    tab1, tab2, tab3 = st.tabs(["Crop Distribution", "Parameter Analysis", "Feature Importance"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Crop Distribution", "Parameter Analysis", "Feature Importance", "Parameter Correlations"])
     
     # Tab 1: Crop Distribution with modern styling
     with tab1:
@@ -747,6 +747,119 @@ def display_data_insights(df):
         </div>
         """, unsafe_allow_html=True)
         display_feature_importance()
+        
+    # Tab 4: Parameter Correlations (based on reference code)
+    with tab4:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Parameter Correlations & Relationships</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Explore how different soil and environmental parameters relate to each other and influence crop suitability.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Parameter Correlation Matrix
+        st.subheader("Parameter Correlations")
+        
+        # Select features for correlation analysis
+        corr_features = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']
+        
+        # Calculate correlation matrix
+        corr_matrix = df[corr_features].corr().round(2)
+        
+        # Display correlation heatmap
+        fig_corr = go.Figure(data=go.Heatmap(
+            z=corr_matrix,
+            x=corr_features,
+            y=corr_features,
+            colorscale='Blues'
+        ))
+        
+        fig_corr.update_layout(
+            title='Parameter Correlation Matrix', 
+            height=400,
+            margin=dict(l=50, r=50, t=50, b=30)
+        )
+        
+        st.plotly_chart(fig_corr, use_container_width=True)
+        
+        st.markdown("""
+        <div style="margin-top: 10px; padding: 10px; background-color: #f0fdf4; border-radius: 5px;">
+            <p style="margin: 0; color: #16a34a; font-weight: 500;">💡 Values closer to 1 (darker blue) indicate strong positive correlation, meaning these parameters tend to increase together.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Parameter Relationships scatter plot
+        st.subheader("Parameter Relationships")
+        
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            selected_x_param = st.selectbox(
+                "Select X-axis Parameter",
+                corr_features
+            )
+        
+        with col2:
+            selected_y_param = st.selectbox(
+                "Select Y-axis Parameter",
+                corr_features,
+                index=1
+            )
+        
+        if selected_x_param and selected_y_param:
+            fig_scatter = px.scatter(
+                df,
+                x=selected_x_param,
+                y=selected_y_param,
+                color='Label',
+                title=f'{selected_x_param} vs {selected_y_param}',
+                color_discrete_sequence=px.colors.qualitative.Bold,
+                height=400
+            )
+            
+            fig_scatter.update_layout(
+                xaxis_title=selected_x_param,
+                yaxis_title=selected_y_param,
+                margin=dict(l=40, r=40, t=50, b=40)
+            )
+            
+            st.plotly_chart(fig_scatter, use_container_width=True)
+        
+        # Disease Proneness Analysis
+        st.subheader("Disease Proneness Analysis")
+        
+        # Only proceed if 'Disease_Prone' column exists
+        if 'Disease_Prone' in df.columns:
+            param = st.selectbox(
+                "Select Environmental Parameter",
+                ['Temperature', 'Humidity', 'pH', 'Rainfall']
+            )
+            
+            fig_disease = px.histogram(
+                df,
+                x=param,
+                color='Disease_Prone',
+                title=f'Disease Proneness by {param}',
+                color_discrete_sequence=['#81C784', '#FFC107'],
+                barmode='group',
+                height=400
+            )
+            
+            fig_disease.update_layout(
+                xaxis_title=param,
+                yaxis_title='Count',
+                margin=dict(l=40, r=40, t=50, b=40)
+            )
+            
+            st.plotly_chart(fig_disease, use_container_width=True)
+            
+            st.markdown("""
+            <div style="margin-top: 10px; padding: 10px; background-color: #f0fdf4; border-radius: 5px;">
+                <p style="margin: 0; color: #16a34a; font-weight: 500;">💡 This chart shows how environmental factors may influence disease susceptibility across different crops.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info("Disease proneness data is not available in the current dataset.")
         
     # Add a tips section at the bottom
     st.markdown("""
