@@ -40,10 +40,31 @@ def main():
     st.sidebar.title("Agri-Smart 🌱")
     st.sidebar.image("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f33f.svg", width=100)
     
+    # Add description
+    st.sidebar.markdown("""
+    **Agri-Smart** is your intelligent agricultural 
+    advisory system that helps make data-driven 
+    farming decisions.
+    """)
+    
+    # Navigation with custom icons
+    st.sidebar.markdown("### Navigation")
+    
     navigation = st.sidebar.radio(
-        "Navigate to:",
-        ["Home", "Crop Recommendation", "Disease Identification", "Data Insights"]
+        "",
+        ["🏠 Home", "🌾 Crop Recommendation", "🔍 Disease Identification", "📊 Data Insights"],
+        format_func=lambda x: x.split(" ", 1)[1] if " " in x else x
     )
+    
+    # Strip emoji from navigation for processing
+    if "🏠" in navigation:
+        navigation = "Home"
+    elif "🌾" in navigation:
+        navigation = "Crop Recommendation"  
+    elif "🔍" in navigation:
+        navigation = "Disease Identification"
+    elif "📊" in navigation:
+        navigation = "Data Insights"
     
     # Home Page
     if navigation == "Home":
@@ -60,6 +81,10 @@ def main():
     # Data Insights Page
     elif navigation == "Data Insights":
         display_data_insights(df)
+    
+    # Error handling for non-existent navigation
+    else:
+        st.error("Page not found. Please select a valid navigation option.")
 
     # Footer
     st.sidebar.markdown("---")
