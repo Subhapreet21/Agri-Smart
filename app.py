@@ -56,19 +56,35 @@ def main():
             menu_icon="cast",
             default_index=0,
             styles={
-                "container": {"padding": "5px", "background-color": "#a2ffa6"},
-                "icon": {"color": "#099313", "font-size": "25px"},
-                "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#4EE556"},
-                "nav-link-selected": {"background-color": "#4EE556", "color": "black", "font-weight": "normal"},
+                "container": {"padding": "5px", "background-color": "transparent"},
+                "icon": {"color": "#16a34a", "font-size": "16px"},
+                "nav-link": {
+                    "font-size": "14px", 
+                    "text-align": "left", 
+                    "margin": "0px", 
+                    "--hover-color": "#dcfce7",
+                    "padding": "10px",
+                    "border-radius": "8px",
+                    "margin-bottom": "5px"
+                },
+                "nav-link-selected": {
+                    "background-color": "#dcfce7", 
+                    "color": "#166534", 
+                    "font-weight": "600"
+                },
             }
         )
         
         # Add description below navigation
         st.markdown("""
-        **Agri-Smart** is your intelligent agricultural 
-        advisory system that helps make data-driven 
-        farming decisions.
-        """)
+        <div style="margin-top: 20px; padding: 15px; background-color: #f0fdf4; border-radius: 8px; border-left: 4px solid #16a34a;">
+            <p style="margin: 0; font-size: 14px; color: #166534;">
+                <strong>Agri-Smart</strong> is your intelligent agricultural 
+                advisory system that helps make data-driven 
+                farming decisions.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     
     # Map option_menu selections to our existing pages
     if navigation == "Dashboard":
@@ -96,10 +112,11 @@ def main():
     else:
         st.error("Page not found. Please select a valid navigation option.")
 
-    # Footer
+    # Modern footer
     st.markdown("""
-        <div style="text-align: center; margin-top: 2rem; padding: 1rem; background-color: white; border-radius: 8px;">
-            <p>Agri-Smart - Making farming smarter with data 🌱</p>
+        <div style="text-align: center; margin-top: 2.5rem; padding: 1.5rem; background-color: white; border-radius: 12px; border-top: 3px solid #16a34a; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);">
+            <p style="color: #4b5563; font-size: 0.9rem; margin-bottom: 0.5rem;">Agri-Smart - Making farming smarter with data 🌱</p>
+            <p style="color: #9ca3af; font-size: 0.8rem; margin-bottom: 0;">© 2023 Agri-Smart Technologies</p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -107,56 +124,56 @@ def main():
 def display_home():
     st.title("🌿 Agri-Smart Dashboard")
     
-    # Create a banner with statistics
+    # Create a banner with statistics - modern design
     st.markdown("""
-    <div style="background-color: #4EE556; padding: 20px; border-radius: 8px; margin-bottom: 20px; color: black;">
-        <h2 style="text-align: center; margin-bottom: 15px;">Your Smart Farming Assistant</h2>
-        <p style="text-align: center;">
+    <div style="background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; color: white; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <h2 style="text-align: center; margin-bottom: 15px; font-weight: 600; letter-spacing: -0.03em;">Your Smart Farming Assistant</h2>
+        <p style="text-align: center; font-size: 16px; opacity: 0.9;">
             Making data-driven decisions in agriculture simpler and more accessible
         </p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Create three statistics cards
+    # Create three statistics cards with modern styling
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h1 style="color: #4CAF50; font-size: 40px;">35+</h1>
-            <p>Supported Crops</p>
+        <div class="dashboard-card">
+            <p class="metric-value">35+</p>
+            <p class="metric-label">Supported Crops</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h1 style="color: #4CAF50; font-size: 40px;">90%</h1>
-            <p>Recommendation Accuracy</p>
+        <div class="dashboard-card">
+            <p class="metric-value">90%</p>
+            <p class="metric-label">Recommendation Accuracy</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h1 style="color: #4CAF50; font-size: 40px;">20+</h1>
-            <p>Disease Patterns</p>
+        <div class="dashboard-card">
+            <p class="metric-value">20+</p>
+            <p class="metric-label">Disease Patterns</p>
         </div>
         """, unsafe_allow_html=True)
     
-    # Feature cards
+    # Feature cards with modern styling
     st.markdown("### Our Features")
     feature_col1, feature_col2, feature_col3 = st.columns(3)
     
     with feature_col1:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 8px; height: 280px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 style="color: #097809;">🌾 Crop Recommendation</h3>
-            <p>Get personalized crop suggestions based on your soil parameters and environmental conditions.</p>
-            <ul>
-                <li>AI-powered recommendations</li>
-                <li>Considers NPK, pH, climate</li>
-                <li>Detailed crop information</li>
+        <div class="card">
+            <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 12px;">🌾 Crop Recommendation</h3>
+            <p style="color: #4b5563; margin-bottom: 15px;">Get personalized crop suggestions based on your soil parameters and environmental conditions.</p>
+            <ul style="padding-left: 20px; color: #4b5563;">
+                <li style="margin-bottom: 5px;">AI-powered recommendations</li>
+                <li style="margin-bottom: 5px;">Considers NPK, pH, climate</li>
+                <li style="margin-bottom: 5px;">Detailed crop information</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -164,13 +181,13 @@ def display_home():
     
     with feature_col2:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 8px; height: 280px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 style="color: #097809;">🔍 Disease Detection</h3>
-            <p>Upload crop images to identify diseases and get treatment recommendations.</p>
-            <ul>
-                <li>Visual disease recognition</li>
-                <li>Customized treatment plans</li>
-                <li>Preventive measures</li>
+        <div class="card">
+            <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 12px;">🔍 Disease Detection</h3>
+            <p style="color: #4b5563; margin-bottom: 15px;">Upload crop images to identify diseases and get treatment recommendations.</p>
+            <ul style="padding-left: 20px; color: #4b5563;">
+                <li style="margin-bottom: 5px;">Visual disease recognition</li>
+                <li style="margin-bottom: 5px;">Customized treatment plans</li>
+                <li style="margin-bottom: 5px;">Preventive measures</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -178,27 +195,27 @@ def display_home():
     
     with feature_col3:
         st.markdown("""
-        <div style="background-color: white; padding: 20px; border-radius: 8px; height: 280px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 style="color: #097809;">📊 Data Insights</h3>
-            <p>Explore visualizations and analytics about crops and their growing conditions.</p>
-            <ul>
-                <li>Crop distribution data</li>
-                <li>Parameter analysis</li>
-                <li>Feature importance</li>
+        <div class="card">
+            <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 12px;">📊 Data Insights</h3>
+            <p style="color: #4b5563; margin-bottom: 15px;">Explore visualizations and analytics about crops and their growing conditions.</p>
+            <ul style="padding-left: 20px; color: #4b5563;">
+                <li style="margin-bottom: 5px;">Crop distribution data</li>
+                <li style="margin-bottom: 5px;">Parameter analysis</li>
+                <li style="margin-bottom: 5px;">Feature importance</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
         st.button("Explore Data Insights →", key="dash_insights", on_click=lambda: st.session_state.update({"navigation": "Data Insights"}))
     
-    # Supported crops section
+    # Supported crops section - modern design
     st.markdown("### Supported Crops")
     st.markdown("""
-    <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <p>Our system provides recommendations and insights for a wide variety of crops including:</p>
+    <div class="card" style="margin-bottom: 20px;">
+        <p style="margin: 0; color: #4b5563;">Our system provides recommendations and insights for a wide variety of crops including:</p>
     </div>
     """, unsafe_allow_html=True)
     
-    # Display crops in columns
+    # Display crops in columns with pill-style design
     crop_groups = [
         ["Wheat", "Barley", "Oat", "Peas", "Potato", "Tomato", "Beet", "Cabbage"],
         ["Alfalfa", "Garlic", "Onion", "Cumin", "Coriander", "Fennel", "Linseed", "Sunflower"],
@@ -212,8 +229,8 @@ def display_home():
         for i, crop in enumerate(group):
             with crop_cols[i]:
                 st.markdown(f"""
-                <div style="background-color: #f0fff0; padding: 10px; border-radius: 5px; text-align: center; margin: 5px;">
-                    <p style="margin: 0; color: #097809;"><strong>{crop}</strong></p>
+                <div class="crop-pill">
+                    {crop}
                 </div>
                 """, unsafe_allow_html=True)
     
@@ -229,30 +246,48 @@ def display_home():
 # Crop Recommendation Page
 def display_crop_recommendation(df, model):
     st.title("Crop Recommendation 🌾")
-    st.markdown("Enter soil parameters and environmental conditions to get personalized crop recommendations.")
     
-    # Create two columns
+    # Introduction with modern styling
+    st.markdown("""
+    <div class="card" style="margin-bottom: 25px;">
+        <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 10px;">Personalized Crop Recommendations</h3>
+        <p style="margin: 0; color: #4b5563;">Enter your soil parameters and environmental conditions below to get AI-powered crop recommendations tailored to your specific growing conditions.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Create two columns with modern card styling
     col1, col2 = st.columns([2, 1])
     
     # Input form in first column
     with col1:
-        st.subheader("Input Parameters")
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Input Parameters</h3>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Create three columns for inputs
         input_col1, input_col2, input_col3 = st.columns(3)
         
         with input_col1:
-            n_value = st.number_input("Nitrogen (N)", min_value=0, max_value=150, value=50)
-            temp_value = st.number_input("Temperature (°C)", min_value=5.0, max_value=45.0, value=25.0, step=0.1)
-            rainfall_value = st.number_input("Rainfall (mm)", min_value=20.0, max_value=500.0, value=100.0, step=0.1)
+            n_value = st.number_input("Nitrogen (N)", min_value=0, max_value=150, value=50,
+                                      help="Amount of nitrogen in soil (mg/kg)")
+            temp_value = st.number_input("Temperature (°C)", min_value=5.0, max_value=45.0, value=25.0, step=0.1,
+                                         help="Average temperature in °C")
+            rainfall_value = st.number_input("Rainfall (mm)", min_value=20.0, max_value=500.0, value=100.0, step=0.1,
+                                           help="Average rainfall in mm")
         
         with input_col2:
-            p_value = st.number_input("Phosphorus (P)", min_value=0, max_value=150, value=50)
-            humidity_value = st.number_input("Humidity (%)", min_value=10.0, max_value=100.0, value=50.0, step=0.1)
+            p_value = st.number_input("Phosphorus (P)", min_value=0, max_value=150, value=50,
+                                     help="Amount of phosphorus in soil (mg/kg)")
+            humidity_value = st.number_input("Humidity (%)", min_value=10.0, max_value=100.0, value=50.0, step=0.1,
+                                           help="Average humidity in %")
         
         with input_col3:
-            k_value = st.number_input("Potassium (K)", min_value=0, max_value=150, value=50)
-            ph_value = st.number_input("pH Value", min_value=3.0, max_value=10.0, value=6.5, step=0.1)
+            k_value = st.number_input("Potassium (K)", min_value=0, max_value=150, value=50,
+                                     help="Amount of potassium in soil (mg/kg)")
+            ph_value = st.number_input("pH Value", min_value=3.0, max_value=10.0, value=6.5, step=0.1,
+                                      help="pH value of soil (1-14)")
         
         # Create a dictionary of input features
         input_features = {
@@ -265,8 +300,9 @@ def display_crop_recommendation(df, model):
             'Rainfall': rainfall_value
         }
         
-        # Button to predict
-        if st.button("Get Recommendation"):
+        # Button to predict with modern styling
+        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+        if st.button("Get Recommendation", key="crop_rec_btn"):
             with st.spinner("Analyzing your inputs..."):
                 # Preprocess features
                 X = preprocess_features(input_features)
@@ -286,67 +322,101 @@ def display_crop_recommendation(df, model):
                 
                 time.sleep(1)  # Simulate processing time
     
-    # Display results in second column
+    # Display results in second column with modern styling
     with col2:
-        st.subheader("Recommended Crop")
-        
         if 'prediction_results' in st.session_state:
             results = st.session_state['prediction_results']
             predicted_crop = results['predicted_crop']
             crop_info = results['crop_info']
             
-            # Display the predicted crop with a large header
-            st.markdown(f"### 🌱 {predicted_crop}")
+            # Display the predicted crop with modern styling
+            st.markdown(f"""
+            <div class="card" style="background: linear-gradient(to right, #f0fdf4, #dcfce7); border-left: 4px solid #16a34a;">
+                <h3 style="color: #166534; font-weight: 600; margin-bottom: 5px;">Recommended Crop</h3>
+                <p style="font-size: 1.5rem; font-weight: 700; color: #16a34a; margin: 10px 0;">🌱 {predicted_crop}</p>
+            </div>
+            """, unsafe_allow_html=True)
             
             # Display crop information
             if crop_info:
-                st.markdown("#### Crop Information")
+                # Disease proneness card
+                prone_status = "Yes" if crop_info.get('Disease_Prone') == 'Yes' else "No"
+                status_color = "#f87171" if prone_status == "Yes" else "#4ade80"
+                status_icon = "⚠️" if prone_status == "Yes" else "✅"
+                status_text = "This crop is prone to diseases" if prone_status == "Yes" else "This crop is generally disease-resistant"
                 
-                # Display disease information
-                if crop_info.get('Disease_Prone') == 'Yes':
-                    st.warning("⚠️ This crop is prone to diseases")
-                else:
-                    st.success("✅ This crop is generally disease-resistant")
+                st.markdown(f"""
+                <div class="card" style="margin-top: 15px;">
+                    <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Disease Proneness</h4>
+                    <p style="color: {status_color}; font-weight: 500;">{status_icon} {status_text}</p>
+                </div>
+                """, unsafe_allow_html=True)
                 
-                # Display possible diseases
+                # Water requirement card
+                if not pd.isna(crop_info.get('Water_Requirement')):
+                    st.markdown(f"""
+                    <div class="card" style="margin-top: 15px;">
+                        <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Water Requirement</h4>
+                        <p style="font-weight: 500; color: #4b5563;">{crop_info.get('Water_Requirement', 'Unknown')} mm</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # Disease resistance score card
+                if not pd.isna(crop_info.get('Disease_Resistance_Score')):
+                    resistance_score = float(crop_info.get('Disease_Resistance_Score', 5.0))
+                    st.markdown(f"""
+                    <div class="card" style="margin-top: 15px;">
+                        <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Disease Resistance</h4>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.progress(resistance_score / 10.0)
+                    st.caption(f"Score: {resistance_score}/10")
+                
+                # Common diseases in an expandable section if any exist
                 diseases = []
                 for disease_type in ['Common_Disease(Fungal)', 'Common_Disease(Bacterial)', 'Common_Disease(Viral)']:
                     if crop_info.get(disease_type) != 'None' and not pd.isna(crop_info.get(disease_type)):
-                        diseases.append(f"{disease_type.split('(')[1].split(')')[0]}: {crop_info.get(disease_type)}")
+                        disease_category = disease_type.split('(')[1].split(')')[0]
+                        diseases.append(f"{disease_category}: {crop_info.get(disease_type)}")
                 
                 if diseases:
-                    st.markdown("#### Common Diseases")
-                    for disease in diseases:
-                        st.markdown(f"- {disease}")
-                
-                # Display water requirement
-                if not pd.isna(crop_info.get('Water_Requirement')):
-                    st.markdown(f"#### Water Requirement")
-                    st.markdown(f"{crop_info.get('Water_Requirement', 'Unknown')} mm")
-                
-                # Display nutrient deficiency
-                if crop_info.get('Nutrient_Deficiency') != 'None' and not pd.isna(crop_info.get('Nutrient_Deficiency')):
-                    st.markdown("#### Nutrient Deficiency")
-                    st.markdown(f"Common deficiency: {crop_info.get('Nutrient_Deficiency')}")
-                
-                # Display disease resistance score
-                if not pd.isna(crop_info.get('Disease_Resistance_Score')):
-                    st.markdown("#### Disease Resistance Score")
-                    resistance_score = float(crop_info.get('Disease_Resistance_Score', 5.0))
-                    st.progress(resistance_score / 10.0)
-                    st.caption(f"Score: {resistance_score}/10")
+                    with st.expander("Common Diseases", expanded=False):
+                        for disease in diseases:
+                            st.markdown(f"- {disease}")
             else:
                 st.info("Detailed information about this crop is not available.")
         else:
-            st.info("Enter soil parameters and click 'Get Recommendation' to see results.")
+            # Display placeholder with instructions
+            st.markdown("""
+            <div class="card" style="background-color: #f0fdf4; text-align: center; padding: 30px 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 15px; display: block; width: 40px; height: 40px; color: #16a34a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p style="color: #4b5563; margin-bottom: 5px;">Enter soil parameters</p>
+                <p style="color: #6b7280; font-size: 0.9rem;">Then click "Get Recommendation"</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 # Disease Identification Page
 def display_disease_identification():
     st.title("Crop Disease Identification 🔍")
-    st.markdown("Upload an image of your crop to identify potential diseases.")
     
-    # Image uploader
-    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    # Introduction with modern styling
+    st.markdown("""
+    <div class="card" style="margin-bottom: 25px;">
+        <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 10px;">AI-Powered Disease Detection</h3>
+        <p style="margin: 0; color: #4b5563;">Upload an image of your crop to identify potential diseases and get treatment recommendations.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Modern styled image uploader
+    st.markdown("""
+    <div class="card">
+        <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Upload Crop Image</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    uploaded_file = st.file_uploader("Select an image of your crop", type=["jpg", "jpeg", "png"], help="Supported formats: JPG, JPEG, PNG")
     
     if uploaded_file is not None:
         # Display the uploaded image
@@ -356,15 +426,25 @@ def display_disease_identification():
         col1, col2 = st.columns([1, 1])
         
         with col1:
-            st.subheader("Uploaded Image")
+            # Create a card for the image
+            st.markdown("""
+            <div class="card">
+                <h3 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 10px;">Your Crop Image</h3>
+            </div>
+            """, unsafe_allow_html=True)
             st.image(image, caption="Uploaded crop image", use_column_width=True)
         
         with col2:
-            st.subheader("Identification Results")
+            # Create a card for results
+            st.markdown("""
+            <div class="card">
+                <h3 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 10px;">Identification Results</h3>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # Process the image when the button is clicked
-            if st.button("Identify Disease"):
-                with st.spinner("Analyzing image..."):
+            # Process the image when the button is clicked with modern styling
+            if st.button("Analyze Image", key="disease_identification_btn"):
+                with st.spinner("Processing image with AI analysis..."):
                     # Identify disease from image
                     disease_result = identify_disease(image)
                     
@@ -373,83 +453,178 @@ def display_disease_identification():
                     
                     time.sleep(2)  # Simulate processing time
             
-            # Display results if available
+            # Display results if available with modern styling
             if 'disease_results' in st.session_state:
                 result = st.session_state['disease_results']
                 
                 if result['is_disease_detected']:
-                    st.error(f"Disease Detected: {result['disease_name']}")
+                    # Disease detected UI with modern styling
+                    st.markdown(f"""
+                    <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; padding: 12px 15px; border-radius: 6px; margin: 15px 0;">
+                        <p style="margin: 0; font-weight: 600; color: #b91c1c;">⚠️ Disease Detected: {result['disease_name']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
-                    st.markdown("### Disease Information")
-                    st.markdown(result['disease_description'])
+                    # Disease information in a card
+                    st.markdown("""
+                    <div class="card" style="margin-top: 15px;">
+                        <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Disease Information</h4>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.markdown(f"<p style='color: #4b5563;'>{result['disease_description']}</p>", unsafe_allow_html=True)
                     
-                    st.markdown("### Treatment")
-                    for treatment in result['treatments']:
-                        st.markdown(f"- {treatment}")
+                    # Treatment options in expandable section
+                    with st.expander("Treatment Options", expanded=True):
+                        for treatment in result['treatments']:
+                            st.markdown(f"""
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <div style="color: #16a34a; margin-right: 8px;">•</div>
+                                <div style="color: #4b5563;">{treatment}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
                     
-                    st.markdown("### Prevention")
-                    for prevention in result['prevention']:
-                        st.markdown(f"- {prevention}")
+                    # Prevention tips in expandable section
+                    with st.expander("Prevention Measures", expanded=True):
+                        for prevention in result['prevention']:
+                            st.markdown(f"""
+                            <div style="display: flex; margin-bottom: 8px;">
+                                <div style="color: #16a34a; margin-right: 8px;">•</div>
+                                <div style="color: #4b5563;">{prevention}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
                 else:
-                    st.success("No disease detected. Your crop appears healthy!")
-                    st.markdown("### Recommendations")
-                    st.markdown("Continue with your current crop management practices. Regular monitoring is always recommended.")
+                    # Healthy crop UI with modern styling
+                    st.markdown("""
+                    <div style="background-color: #dcfce7; border-left: 4px solid #22c55e; padding: 12px 15px; border-radius: 6px; margin: 15px 0;">
+                        <p style="margin: 0; font-weight: 600; color: #15803d;">✅ No disease detected. Your crop appears healthy!</p>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 15px;">
+                        <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Recommendations</h4>
+                        <p style="color: #4b5563;">Continue with your current crop management practices. Regular monitoring is always recommended to ensure early detection of any issues.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
     else:
-        # Display instructions when no image is uploaded
-        st.info("Please upload an image to identify potential crop diseases.")
+        # Display instructions and examples in a more modern way
+        col1, col2 = st.columns([1, 2])
         
-        # Display example information
-        st.markdown("### Common Crop Diseases")
-        
-        # Create three columns for example diseases
-        ex_col1, ex_col2, ex_col3 = st.columns(3)
-        
-        with ex_col1:
-            st.markdown("#### Leaf Spot")
+        with col1:
+            # Add an illustration or icon
             st.markdown("""
-            - Small, brown or black spots on leaves
-            - Can eventually lead to leaf drop
-            - Common in many crops including tomato, potato, and cucumber
-            """)
+            <div style="background-color: #f0fdf4; padding: 30px; border-radius: 12px; text-align: center; height: 100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 15px; display: block; width: 80px; height: 80px; color: #16a34a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p style="color: #4b5563; margin-bottom: 5px;">Upload a clear, well-lit image</p>
+                <p style="color: #6b7280; font-size: 0.9rem;">For the best results, ensure the affected parts are visible</p>
+            </div>
+            """, unsafe_allow_html=True)
         
-        with ex_col2:
-            st.markdown("#### Powdery Mildew")
+        with col2:
+            # Modern styled disease examples
             st.markdown("""
-            - White powdery substance on leaves
-            - Reduces photosynthesis and yield
-            - Common in grapes, strawberries, and cucurbits
-            """)
-        
-        with ex_col3:
-            st.markdown("#### Rust")
-            st.markdown("""
-            - Orange-brown pustules on leaves
-            - Can cause severe defoliation
-            - Common in wheat, beans, and sunflowers
-            """)
+            <div class="card">
+                <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Common Crop Diseases</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Create three columns for example diseases
+            ex_col1, ex_col2, ex_col3 = st.columns(3)
+            
+            with ex_col1:
+                st.markdown("""
+                <div class="card" style="height: 100%;">
+                    <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Leaf Spot</h4>
+                    <ul style="padding-left: 20px; margin: 0; color: #4b5563;">
+                        <li style="margin-bottom: 5px;">Small, brown or black spots</li>
+                        <li style="margin-bottom: 5px;">Leads to leaf drop</li>
+                        <li style="margin-bottom: 5px;">Common in many crops</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with ex_col2:
+                st.markdown("""
+                <div class="card" style="height: 100%;">
+                    <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Powdery Mildew</h4>
+                    <ul style="padding-left: 20px; margin: 0; color: #4b5563;">
+                        <li style="margin-bottom: 5px;">White powdery substance</li>
+                        <li style="margin-bottom: 5px;">Reduces photosynthesis</li>
+                        <li style="margin-bottom: 5px;">Common in various fruits</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with ex_col3:
+                st.markdown("""
+                <div class="card" style="height: 100%;">
+                    <h4 style="color: #166534; font-size: 1rem; margin-bottom: 10px;">Rust</h4>
+                    <ul style="padding-left: 20px; margin: 0; color: #4b5563;">
+                        <li style="margin-bottom: 5px;">Orange-brown pustules</li>
+                        <li style="margin-bottom: 5px;">Causes defoliation</li>
+                        <li style="margin-bottom: 5px;">Common in grains and beans</li>
+                    </ul>
+                </div>
+                """, unsafe_allow_html=True)
 
 # Data Insights Page
 def display_data_insights(df):
     st.title("Agricultural Data Insights 📊")
-    st.markdown("Explore visualizations and analytics about crops and their parameters.")
     
-    # Create tabs for different visualizations
+    # Introduction with modern styling
+    st.markdown("""
+    <div class="card" style="margin-bottom: 25px;">
+        <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 10px;">Data-Driven Farming Insights</h3>
+        <p style="margin: 0; color: #4b5563;">Explore visualizations and analytics about crops and their ideal growing parameters to make informed decisions.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Modern tabs using Streamlit's tab component
     tab1, tab2, tab3 = st.tabs(["Crop Distribution", "Parameter Analysis", "Feature Importance"])
     
-    # Tab 1: Crop Distribution
+    # Tab 1: Crop Distribution with modern styling
     with tab1:
-        st.subheader("Crop Distribution Analysis")
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Crop Distribution Analysis</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Explore the distribution of different crops in our dataset and understand their prevalence.</p>
+        </div>
+        """, unsafe_allow_html=True)
         display_crop_distribution(df)
     
-    # Tab 2: Parameter Analysis
+    # Tab 2: Parameter Analysis with modern styling
     with tab2:
-        st.subheader("Parameter Ranges by Crop")
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Parameter Ranges by Crop</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Visualize the optimal ranges of soil parameters and environmental conditions for different crops.</p>
+        </div>
+        """, unsafe_allow_html=True)
         display_parameter_ranges(df)
     
-    # Tab 3: Feature Importance
+    # Tab 3: Feature Importance with modern styling
     with tab3:
-        st.subheader("Feature Importance for Crop Selection")
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Feature Importance for Crop Selection</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Understand which soil and environmental factors have the most significant impact on crop selection decisions.</p>
+        </div>
+        """, unsafe_allow_html=True)
         display_feature_importance()
+        
+    # Add a tips section at the bottom
+    st.markdown("""
+    <div style="margin-top: 30px; padding: 20px; background-color: #f0fdf4; border-radius: 12px; border-left: 4px solid #16a34a;">
+        <h3 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center;">
+            <span style="margin-right: 8px;">💡</span> Data Interpretation Tips
+        </h3>
+        <ul style="margin: 0; padding-left: 20px; color: #4b5563;">
+            <li style="margin-bottom: 5px;">Use the crop distribution data to understand which crops are most commonly grown in similar conditions.</li>
+            <li style="margin-bottom: 5px;">Parameter ranges help you determine if your soil and climate conditions are suitable for specific crops.</li>
+            <li style="margin-bottom: 5px;">Feature importance highlights which parameters you should focus on optimizing for better crop yields.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
