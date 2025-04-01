@@ -7,152 +7,166 @@ import plotly.graph_objects as go
 
 def display_crop_distribution(df):
     """
-    Display the distribution of crops in the dataset.
+    Display the distribution of crops in the dataset using simple visualizations.
     """
     # Count the occurrences of each crop
     crop_counts = df['Label'].value_counts().reset_index()
     crop_counts.columns = ['Crop', 'Count']
     
-    # Identify the top crops (for better visualization)
-    top_crops = crop_counts.head(15)
+    # Identify the top 10 crops (for better visualization)
+    top_crops = crop_counts.head(10)
     
-    # Create a bar chart using Plotly
+    # Explanation for users
+    st.markdown("""
+    ### What am I looking at?
+    This chart shows the **most common crops** in our dataset. 
+    Taller bars represent crops that appear more frequently.
+    """)
+    
+    # Create a simple bar chart using Plotly
     fig = px.bar(
         top_crops,
         x='Crop',
         y='Count',
-        color='Count',
-        color_continuous_scale='Viridis',
-        title='Distribution of Top Crops in Dataset'
+        color='Crop',  # Each crop gets its own color
+        title='Top 10 Most Common Crops',
     )
     
     fig.update_layout(
-        xaxis_title='Crop',
-        yaxis_title='Number of Instances',
-        height=500
+        xaxis_title='Crop Type',
+        yaxis_title='Number of Crops',
+        height=400,
+        showlegend=False  # Hide legend as colors are just for visual distinction
     )
     
     st.plotly_chart(fig, use_container_width=True)
-    
-    # Create a treemap for crop distribution
-    st.subheader("Crop Distribution Treemap")
-    fig_treemap = px.treemap(
-        crop_counts,
-        path=['Crop'],
-        values='Count',
-        color='Count',
-        color_continuous_scale='Viridis',
-        title='Distribution of Crops as Treemap'
-    )
-    
-    fig_treemap.update_layout(height=500)
-    st.plotly_chart(fig_treemap, use_container_width=True)
     
     # Create columns for more visualizations
     col1, col2 = st.columns(2)
     
     with col1:
-        # Create a pie chart for disease-prone crops
+        # Create a simple pie chart for disease-prone crops
         disease_prone = df['Disease_Prone'].value_counts().reset_index()
         disease_prone.columns = ['Disease Prone', 'Count']
+        
+        # Explanation for users
+        st.markdown("""
+        ### Crops and Disease Risk
+        This chart shows what percentage of crops are prone to diseases.
+        """)
         
         fig2 = px.pie(
             disease_prone,
             values='Count',
             names='Disease Prone',
-            title='Distribution of Disease-Prone Crops',
-            color_discrete_sequence=px.colors.sequential.Viridis
+            color_discrete_sequence=['#4CAF50', '#F44336'],  # Green for No, Red for Yes
+            hole=0.3
+        )
+        
+        fig2.update_layout(
+            height=350,
+            legend_title="Disease Prone"
         )
         
         st.plotly_chart(fig2, use_container_width=True)
     
     with col2:
-        # Create a histogram for water requirements
+        # Create a simple bar chart for water requirements by crop category
         if 'Water_Requirement' in df.columns:
-            fig_water = px.histogram(
-                df, 
-                x='Water_Requirement',
+            # Explanation for users
+            st.markdown("""
+            ### Water Needs by Disease Risk
+            This chart compares water requirements for disease-prone vs. disease-resistant crops.
+            """)
+            
+            # Group by disease prone and get average water requirement
+            water_by_disease = df.groupby('Disease_Prone')['Water_Requirement'].mean().reset_index()
+            
+            fig_water = px.bar(
+                water_by_disease,
+                x='Disease_Prone',
+                y='Water_Requirement',
                 color='Disease_Prone',
-                nbins=20,
-                title='Water Requirements Distribution',
-                color_discrete_sequence=px.colors.qualitative.Set2
+                color_discrete_sequence=['#4CAF50', '#F44336'],  # Green for No, Red for Yes
+                title='Average Water Requirements',
+                labels={'Disease_Prone': 'Disease Prone', 'Water_Requirement': 'Water Needed (mm)'}
             )
-            fig_water.update_layout(bargap=0.1)
+            
+            fig_water.update_layout(height=350, showlegend=False)
             st.plotly_chart(fig_water, use_container_width=True)
         else:
             st.info("Water requirement data not available")
     
-    # Display crops by common diseases
-    st.subheader("Crops by Common Diseases")
+    # Display a simple overview of common diseases
+    st.subheader("Common Crop Diseases")
+    st.markdown("""
+    This section shows the most common diseases that affect crops. Understanding 
+    these diseases can help with better crop management and disease prevention.
+    """)
     
     # Collect disease data
-    fungal_diseases = df[df['Common_Disease(Fungal)'] != 'None']['Common_Disease(Fungal)'].value_counts().head(5)
-    bacterial_diseases = df[df['Common_Disease(Bacterial)'] != 'None']['Common_Disease(Bacterial)'].value_counts().head(5)
-    viral_diseases = df[df['Common_Disease(Viral)'] != 'None']['Common_Disease(Viral)'].value_counts().head(5)
+    disease_types = {
+        'Fungal': {'color': '#8BC34A', 'description': 'Caused by fungi - often appear as spots, rot, or mildew'},
+        'Bacterial': {'color': '#2196F3', 'description': 'Caused by bacteria - often appear as spots, wilting, or rot'},
+        'Viral': {'color': '#F44336', 'description': 'Caused by viruses - often cause stunting, yellowing, or mosaic patterns'}
+    }
     
-    # Create columns for each disease type
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("### Fungal Diseases")
-        if not fungal_diseases.empty:
-            fig_fungal = px.pie(
-                values=fungal_diseases.values,
-                names=fungal_diseases.index,
-                title='Top Fungal Diseases',
-                color_discrete_sequence=px.colors.sequential.Greens,
-                hole=0.4
-            )
-            st.plotly_chart(fig_fungal, use_container_width=True)
-        else:
-            st.info("No fungal disease data available")
-    
-    with col2:
-        st.markdown("### Bacterial Diseases")
-        if not bacterial_diseases.empty:
-            fig_bacterial = px.pie(
-                values=bacterial_diseases.values,
-                names=bacterial_diseases.index,
-                title='Top Bacterial Diseases',
-                color_discrete_sequence=px.colors.sequential.Blues,
-                hole=0.4
-            )
-            st.plotly_chart(fig_bacterial, use_container_width=True)
-        else:
-            st.info("No bacterial disease data available")
-    
-    with col3:
-        st.markdown("### Viral Diseases")
-        if not viral_diseases.empty:
-            fig_viral = px.pie(
-                values=viral_diseases.values,
-                names=viral_diseases.index,
-                title='Top Viral Diseases',
-                color_discrete_sequence=px.colors.sequential.Reds,
-                hole=0.4
-            )
-            st.plotly_chart(fig_viral, use_container_width=True)
-        else:
-            st.info("No viral disease data available")
+    # Create a simple table with disease types and descriptions
+    for disease_type, info in disease_types.items():
+        col = f'Common_Disease({disease_type})'
+        if col in df.columns:
+            # Get diseases that aren't "None"
+            diseases = df[df[col] != 'None'][col].value_counts().head(3)
             
-    # Add a nutrient deficiency distribution chart
-    st.subheader("Nutrient Deficiency Distribution")
+            if not diseases.empty:
+                st.markdown(f"### {disease_type} Diseases")
+                st.markdown(f"*{info['description']}*")
+                
+                # Create a simple horizontal bar chart
+                diseases_df = diseases.reset_index()
+                diseases_df.columns = ['Disease', 'Count']
+                
+                fig_disease = px.bar(
+                    diseases_df,
+                    y='Disease',
+                    x='Count',
+                    orientation='h',
+                    color_discrete_sequence=[info['color']]
+                )
+                
+                fig_disease.update_layout(
+                    height=250,
+                    margin=dict(l=20, r=20, t=30, b=20),
+                    xaxis_title="Number of Affected Crops",
+                    yaxis_title=""
+                )
+                
+                st.plotly_chart(fig_disease, use_container_width=True)
+            else:
+                st.info(f"No {disease_type.lower()} disease data available")
     
+    # Add a simple nutrient deficiency section
     if 'Nutrient_Deficiency' in df.columns:
         nutrient_def = df[df['Nutrient_Deficiency'] != 'None']
         if not nutrient_def.empty:
+            st.subheader("Common Nutrient Deficiencies")
+            st.markdown("""
+            This chart shows which nutrient deficiencies are most common in crops.
+            Addressing these deficiencies can help improve crop health and yield.
+            """)
+            
             nutrient_counts = nutrient_def['Nutrient_Deficiency'].value_counts().reset_index()
             nutrient_counts.columns = ['Nutrient', 'Count']
             
-            fig_nutrient = px.bar(
+            fig_nutrient = px.pie(
                 nutrient_counts,
-                x='Nutrient',
-                y='Count',
-                color='Count',
-                title='Common Nutrient Deficiencies in Crops',
-                color_continuous_scale='YlOrRd'
+                values='Count',
+                names='Nutrient',
+                color_discrete_sequence=px.colors.qualitative.Safe,  # Simple, distinct colors
+                title='Common Nutrient Deficiencies'
             )
             
+            fig_nutrient.update_traces(textposition='inside', textinfo='percent+label')
             fig_nutrient.update_layout(height=400)
             st.plotly_chart(fig_nutrient, use_container_width=True)
         else:
@@ -306,196 +320,160 @@ def display_parameter_ranges(df):
 
 def display_feature_importance():
     """
-    Display the feature importance for crop recommendation.
+    Display the feature importance for crop recommendation in a simple, understandable way.
     """
-    # For demonstration, we use static feature importance
-    # In a real implementation, this would come from the trained model
+    # For demonstration, we use static feature importance values
+    # In a real implementation, these would come from the trained model
     
     features = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']
     importance = [0.18, 0.15, 0.17, 0.21, 0.12, 0.08, 0.09]  # Example values
     
-    # Create tabs for different visualizations
-    importance_tabs = st.tabs(["Bar Chart", "Sunburst", "3D Visualization"])
+    # Convert feature abbreviations to full names for better understanding
+    feature_names = {
+        'N': 'Nitrogen',
+        'P': 'Phosphorus',
+        'K': 'Potassium',
+        'Temperature': 'Temperature',
+        'Humidity': 'Humidity',
+        'pH': 'Soil pH',
+        'Rainfall': 'Rainfall'
+    }
     
-    with importance_tabs[0]:
-        # Create bar chart using Plotly
-        fig = px.bar(
-            x=features,
-            y=importance,
-            color=importance,
-            color_continuous_scale='Viridis',
-            labels={'x': 'Feature', 'y': 'Importance'},
-            title='Feature Importance for Crop Recommendation'
-        )
-        
-        fig.update_layout(
-            xaxis_title='Feature',
-            yaxis_title='Importance Score',
-            height=500
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+    # Add explanations for each feature
+    feature_explanations = {
+        'N': 'Essential for leaf growth and overall plant development',
+        'P': 'Important for root development and flowering',
+        'K': 'Helps with disease resistance and overall plant health',
+        'Temperature': 'Different crops need different temperature ranges',
+        'Humidity': 'Affects transpiration and disease susceptibility',
+        'pH': 'Determines nutrient availability in soil',
+        'Rainfall': 'Water availability for plant growth'
+    }
     
-    with importance_tabs[1]:
-        # Create sunburst chart
-        df_sunburst = pd.DataFrame({
-            'Features': features,
-            'Importance': importance,
-            'Category': ['Nutrient', 'Nutrient', 'Nutrient', 'Environmental', 'Environmental', 'Soil', 'Environmental']
-        })
-        
-        fig_sunburst = px.sunburst(
-            df_sunburst,
-            path=['Category', 'Features'],
-            values='Importance',
-            color='Importance',
-            color_continuous_scale='Viridis',
-            title='Feature Importance by Category'
-        )
-        
-        fig_sunburst.update_layout(height=500)
-        st.plotly_chart(fig_sunburst, use_container_width=True)
-    
-    with importance_tabs[2]:
-        # Create a 3D visualization (scatter plot in 3D space)
-        # We'll visualize N, P, K in 3D space with Temperature as the color
-        df_3d = pd.DataFrame({
-            'N': [20, 40, 60, 80, 100, 120],
-            'P': [15, 30, 45, 60, 75, 90],
-            'K': [30, 40, 50, 60, 70, 80],
-            'Temperature': [18, 22, 25, 28, 32, 35],
-            'Crop': ['Wheat', 'Rice', 'Maize', 'Cotton', 'Sugarcane', 'Potato']
-        })
-        
-        fig_3d = px.scatter_3d(
-            df_3d,
-            x='N',
-            y='P',
-            z='K',
-            color='Temperature',
-            size=[importance[0]]*6,  # Use N importance for size
-            text='Crop',
-            title='3D Visualization of Key Parameters',
-            color_continuous_scale='Viridis'
-        )
-        
-        fig_3d.update_layout(height=600)
-        st.plotly_chart(fig_3d, use_container_width=True)
-    
-    # Correlation between parameters
-    st.subheader("Parameter Correlations")
-    
-    # Create a static correlation matrix for demonstration
-    # In a real implementation, this would be calculated from the dataset
-    correlation_data = pd.DataFrame([
-        [1.00, 0.25, 0.18, 0.05, -0.12, 0.08, 0.02],
-        [0.25, 1.00, 0.31, 0.10, -0.05, 0.15, 0.08],
-        [0.18, 0.31, 1.00, 0.22, 0.07, 0.11, 0.15],
-        [0.05, 0.10, 0.22, 1.00, 0.35, -0.09, 0.28],
-        [-0.12, -0.05, 0.07, 0.35, 1.00, -0.22, 0.41],
-        [0.08, 0.15, 0.11, -0.09, -0.22, 1.00, -0.14],
-        [0.02, 0.08, 0.15, 0.28, 0.41, -0.14, 1.00]
-    ], columns=features, index=features)
-    
-    # Create correlation visualization tabs
-    corr_tabs = st.tabs(["Heatmap", "Network Graph"])
-    
-    with corr_tabs[0]:
-        # Create heatmap
-        fig2 = px.imshow(
-            correlation_data,
-            color_continuous_scale='RdBu_r',
-            labels=dict(x="Parameter", y="Parameter", color="Correlation"),
-            title="Correlation Between Parameters"
-        )
-        
-        fig2.update_layout(height=500)
-        st.plotly_chart(fig2, use_container_width=True)
-    
-    with corr_tabs[1]:
-        # Create a network graph of correlations
-        # First, we need to transform the correlation matrix into edge data
-        edges = []
-        for i in range(len(features)):
-            for j in range(i+1, len(features)):
-                if abs(correlation_data.iloc[i, j]) > 0.1:  # Only include correlations above threshold
-                    edges.append({
-                        'source': features[i],
-                        'target': features[j],
-                        'value': abs(correlation_data.iloc[i, j]),
-                        'color': 'blue' if correlation_data.iloc[i, j] > 0 else 'red'
-                    })
-        
-        # Create network graph
-        edge_x = []
-        edge_y = []
-        edge_colors = []
-        
-        # Simple layout for nodes (in a circle)
-        import math
-        node_x = [math.cos(2*math.pi*i/len(features)) for i in range(len(features))]
-        node_y = [math.sin(2*math.pi*i/len(features)) for i in range(len(features))]
-        
-        # Add edges
-        for edge in edges:
-            i = features.index(edge['source'])
-            j = features.index(edge['target'])
-            
-            edge_x.extend([node_x[i], node_x[j], None])
-            edge_y.extend([node_y[i], node_y[j], None])
-            edge_colors.append(edge['color'])
-        
-        # Create edge trace
-        edge_trace = go.Scatter(
-            x=edge_x, y=edge_y,
-            line=dict(width=1, color='#888'),
-            hoverinfo='none',
-            mode='lines'
-        )
-        
-        # Create node trace
-        node_trace = go.Scatter(
-            x=node_x, y=node_y,
-            mode='markers+text',
-            text=features,
-            marker=dict(
-                showscale=True,
-                color=[importance[i]*5 for i in range(len(features))],
-                size=15,
-                colorscale='Viridis',
-                line_width=2
-            )
-        )
-        
-        # Create figure
-        fig_network = go.Figure(data=[edge_trace, node_trace],
-                              layout=go.Layout(
-                                  title='Parameter Correlation Network',
-                                  showlegend=False,
-                                  hovermode='closest',
-                                  margin=dict(b=20, l=5, r=5, t=40),
-                                  xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                                  yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                                  height=500
-                              ))
-        
-        st.plotly_chart(fig_network, use_container_width=True)
-    
-    # Add explanation
+    # Create a simple header and explanation
     st.markdown("""
-    ### Understanding Feature Importance
+    ### What Makes a Crop Grow Well?
     
-    Feature importance helps us understand which soil and environmental parameters have the most significant impact on crop selection:
+    Different factors affect crop growth in different ways. Some are more important than others.
+    This chart shows how important each factor is for deciding which crop to plant.
+    """)
     
-    - **Temperature**: Has the highest importance, indicating that different crops have specific temperature requirements.
-    - **Nitrogen (N)**: The second most important feature, essential for plant growth and development.
-    - **Potassium (K)**: Important for overall plant health and disease resistance.
-    - **Phosphorus (P)**: Essential for root development and flowering.
-    - **Humidity**: Affects plant transpiration and disease susceptibility.
-    - **Rainfall**: Determines water availability for crops.
-    - **pH**: Affects nutrient availability in the soil.
+    # Create simple bar chart with clear colors and labels
+    fig = px.bar(
+        x=[feature_names[f] for f in features],
+        y=importance,
+        color=importance,
+        color_continuous_scale='RdYlGn',  # Red to Yellow to Green scale
+        labels={'x': 'Growing Factor', 'y': 'Importance (higher is more important)'},
+        title='How Important Each Factor Is for Crop Selection'
+    )
     
-    The correlation heatmap shows how different parameters relate to each other. Strong positive correlations (blue) indicate parameters that tend to increase together, while negative correlations (red) show inverse relationships.
+    fig.update_layout(
+        xaxis_title='Growing Factor',
+        yaxis_title='Importance',
+        height=450
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Add a simple explanation of what these values mean
+    st.markdown("""
+    ### What This Means
+    
+    The taller the bar, the more important that factor is when choosing the right crop for your land.
+    """)
+    
+    # Create a simple table explaining each factor
+    st.subheader("Understanding Each Factor")
+    
+    for feature in features:
+        with st.expander(f"{feature_names[feature]}", expanded=False):
+            col1, col2 = st.columns([1, 3])
+            with col1:
+                # Show importance as a simple gauge
+                importance_value = importance[features.index(feature)]
+                st.metric("Importance", f"{importance_value:.2f}")
+                st.progress(importance_value)
+            with col2:
+                st.markdown(f"**{feature_explanations[feature]}**")
+                
+                if feature == 'N':
+                    st.markdown("- Helps plants grow leafy and green")
+                    st.markdown("- Too little: yellow leaves, stunted growth")
+                    st.markdown("- Too much: lots of leaves but weak stems")
+                elif feature == 'P':
+                    st.markdown("- Helps develop strong roots")
+                    st.markdown("- Important for flowering and seed production")
+                    st.markdown("- Too little: poor growth and few flowers")
+                elif feature == 'K':
+                    st.markdown("- Strengthens plants against disease")
+                    st.markdown("- Helps regulate water in plants")
+                    st.markdown("- Too little: weak plants, poor crop quality")
+                elif feature == 'Temperature':
+                    st.markdown("- Each crop has an ideal temperature range")
+                    st.markdown("- Too cold: slow growth or damage")
+                    st.markdown("- Too hot: stress, wilting, or damage")
+                elif feature == 'Humidity':
+                    st.markdown("- Affects how plants lose water")
+                    st.markdown("- Too low: plants dry out quickly")
+                    st.markdown("- Too high: can encourage fungal diseases")
+                elif feature == 'pH':
+                    st.markdown("- Affects whether plants can access nutrients")
+                    st.markdown("- Most crops prefer slightly acidic to neutral soil (pH 6-7)")
+                    st.markdown("- Wrong pH: nutrients are locked in soil, unavailable to plants")
+                elif feature == 'Rainfall':
+                    st.markdown("- Water is essential for all plant growth")
+                    st.markdown("- Too little: drought stress, wilting")
+                    st.markdown("- Too much: root rot, nutrient leaching")
+    
+    # Show a simple relationship between parameters
+    st.subheader("How These Factors Work Together")
+    
+    st.markdown("""
+    Some growing factors work together, while others counteract each other. 
+    This simplified chart shows how they relate.
+    """)
+    
+    # Create a simplified correlation explanation with colored boxes
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Factors that work together")
+        st.markdown("When one increases, the other often increases too:")
+        
+        st.markdown("""
+        - Temperature 🔼 and Humidity 🔼
+        - Rainfall 🔼 and Humidity 🔼
+        - Nitrogen 🔼 and plant growth 🔼
+        """)
+        
+    with col2:
+        st.markdown("### Factors that counteract each other")
+        st.markdown("When one increases, the other often decreases:")
+        
+        st.markdown("""
+        - pH (high/alkaline) 🔼 and nutrient availability 🔽
+        - Too much rain 🔼 and fertilizer effectiveness 🔽
+        - High temperature 🔼 and water retention 🔽 
+        """)
+    
+    # Add a simple diagram showing relationship between factors
+    st.image("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f331.svg", width=50)
+    st.markdown("""
+    *The right balance of all these factors leads to healthy crops!*
+    """)
+    
+    # Show a recommendation message
+    st.markdown("""
+    ### How to Use This Information
+    
+    When planning what to plant:
+    
+    1. **Focus on the most important factors first** - especially Temperature and NPK levels
+    2. **Measure these factors in your soil** - soil testing kits are available at garden centers
+    3. **Choose crops that match your conditions** - or adjust your soil to match crop needs
+    
+    Remember: It's easier to choose the right crop for your conditions than to change your conditions for a crop!
     """)
     
     # Add crop comparison functionality
