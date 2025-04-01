@@ -1,4 +1,4 @@
-/* Custom CSS for Agri-Smart - Modern UI */
+/* Custom CSS for Agri-Smart - Modern UI with Enhanced Green Theme */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -7,7 +7,7 @@
 
 /* Main container styling */
 .main {
-    background-color: #f6f8fa;
+    background-color: #f9fafb;
     padding: 1.5rem;
 }
 
@@ -15,7 +15,7 @@
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    color: #0a5d0a;
+    color: #166534;
     letter-spacing: -0.02em;
 }
 
@@ -67,8 +67,8 @@ p {
 
 /* Sidebar styling */
 section[data-testid="stSidebar"] {
-    background-color: #f6f8fa;
-    border-right: 1px solid #e5e7eb;
+    background-color: #f0fdf4;
+    border-right: 1px solid #d1fae5;
 }
 
 section[data-testid="stSidebar"] > div {
@@ -78,6 +78,7 @@ section[data-testid="stSidebar"] > div {
 section[data-testid="stSidebar"] h1 {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
+    color: #166534;
 }
 
 /* Tabs styling */
@@ -88,14 +89,18 @@ section[data-testid="stSidebar"] h1 {
 .stTabs [data-baseweb="tab"] {
     border-radius: 6px 6px 0px 0px;
     padding: 10px 16px;
-    background-color: #f6f8fa;
-    border: 1px solid #e5e7eb;
+    background-color: #f0fdf4;
+    border: 1px solid #d1fae5;
     border-bottom: none;
+    color: #15803d;
+    font-weight: 500;
 }
 
 .stTabs [aria-selected="true"] {
     background-color: white;
-    border-top: 2px solid #16a34a;
+    border-top: 3px solid #16a34a;
+    color: #166534;
+    font-weight: 600;
 }
 
 /* Cards */
@@ -103,15 +108,17 @@ div.card {
     background-color: white;
     padding: 1.5rem;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.25rem;
     border: 1px solid #e5e7eb;
+    border-left: 3px solid #16a34a;
     transition: all 0.3s ease;
 }
 
 div.card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 15px rgba(22, 101, 52, 0.1);
     transform: translateY(-2px);
+    border-left: 3px solid #15803d;
 }
 
 /* Form inputs */
@@ -144,51 +151,66 @@ div[data-baseweb="input"]:focus-within {
 .nav-link {
     border-radius: 8px !important;
     margin-bottom: 5px !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav-link:hover {
+    background-color: #f0fdf4 !important;
 }
 
 .nav-link-selected {
-    font-weight: 500 !important;
+    font-weight: 600 !important;
+    background-color: #dcfce7 !important;
+    color: #166534 !important;
 }
 
 /* File uploader */
 [data-testid="stFileUploader"] {
-    border: 1px dashed #d1d5db;
+    border: 2px dashed #a7f3d0;
     border-radius: 8px;
     padding: 1rem;
+    background-color: #f0fdf4;
+    transition: all 0.2s ease;
 }
 
 [data-testid="stFileUploader"]:hover {
-    border-color: #16a34a;
+    border-color: #10b981;
+    background-color: #ecfdf5;
 }
 
 /* Custom card class for dashboard */
 .dashboard-card {
     background-color: white;
     border-radius: 12px;
-    border: 1px solid #e5e7eb;
+    border-left: 4px solid #16a34a;
     padding: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
 }
 
 .dashboard-card:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     transform: translateY(-3px);
+    border-left: 4px solid #15803d;
 }
 
 /* Metrics on dashboard */
 .metric-value {
     font-weight: 700;
     font-size: 2.5rem;
-    color: #16a34a;
+    color: #15803d;
     margin: 0;
     line-height: 1;
+    background: linear-gradient(90deg, #16a34a 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .metric-label {
     font-size: 0.9rem;
-    color: #6b7280;
+    color: #4b5563;
     margin-top: 0.3rem;
+    font-weight: 500;
 }
 
 /* Custom crop pill */

@@ -23,6 +23,21 @@ st.set_page_config(
     layout="wide"
 )
 
+# Custom color palettes for a consistent theme
+GREEN_PALETTE = ["#166534", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#86efac", "#bbf7d0"]
+BLUE_PALETTE = ["#0c4a6e", "#0369a1", "#0284c7", "#0ea5e9", "#38bdf8", "#7dd3fc", "#bae6fd"]
+SOIL_PALETTE = ["#854d0e", "#a16207", "#ca8a04", "#eab308", "#facc15", "#fde047"]
+DISEASE_PALETTE = ["#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#f87171", "#fca5a5"]
+CROP_PALETTE = px.colors.qualitative.Prism
+
+# Load custom CSS
+def load_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# Load custom CSS
+load_css('assets/custom.css')
+
 # Load data
 @st.cache_data
 def load_data():
@@ -202,7 +217,7 @@ def display_home(df):
     # Crop distribution visualization
     fig_dist = px.pie(df, names='Label', 
                       title='Distribution of Crops',
-                      color_discrete_sequence=px.colors.sequential.Greens,
+                      color_discrete_sequence=GREEN_PALETTE,
                       height=400)
     fig_dist.update_traces(textposition='inside', textinfo='percent+label')
     fig_dist.update_layout(
@@ -227,7 +242,7 @@ def display_home(df):
     # Parameter distribution visualization                      
     fig_param = px.box(df, x='Label', y=param,
                        title=f'{param.title()} Distribution by Crop',
-                       color_discrete_sequence=['#16a34a'],
+                       color_discrete_sequence=GREEN_PALETTE[1:3],
                        height=400)
     fig_param.update_layout(
         title_font_size=18,
@@ -254,7 +269,7 @@ def display_home(df):
         fig_disease = px.bar(df_disease.groupby('Label')['Disease_Prone_Numeric'].mean().reset_index(),
                             x='Label', y='Disease_Prone_Numeric',
                             title='Disease Probability by Crop',
-                            color_discrete_sequence=['#16a34a'],
+                            color_discrete_sequence=DISEASE_PALETTE,
                             height=400)
         fig_disease.update_layout(
             title_font_size=18,
@@ -1018,7 +1033,7 @@ def display_rabi_crops(df):
                 # Create pie chart
                 fig_disease = px.pie(disease_prone_counts, names='Status', values='Count',
                                     title='Disease Proneness of Rabi Crops',
-                                    color_discrete_sequence=['#81C784', '#FF8A65'],
+                                    color_discrete_sequence=['#4ade80', '#f87171'],
                                     height=350)
                 fig_disease.update_traces(textposition='inside', textinfo='percent+label')
                 st.plotly_chart(fig_disease, use_container_width=True)
@@ -1275,7 +1290,7 @@ def display_kharif_crops(df):
     
     fig_dist = px.pie(kharif_df, names='Label', 
                      title='Distribution of Kharif Crops',
-                     color_discrete_sequence=px.colors.sequential.Blues,
+                     color_discrete_sequence=BLUE_PALETTE,
                      height=400)
     fig_dist.update_traces(textposition='inside', textinfo='percent+label')
     fig_dist.update_layout(
@@ -1354,7 +1369,7 @@ def display_kharif_crops(df):
                 # Create pie chart
                 fig_disease = px.pie(disease_prone_counts, names='Status', values='Count',
                                     title='Disease Proneness of Kharif Crops',
-                                    color_discrete_sequence=['#81C784', '#FF8A65'],
+                                    color_discrete_sequence=['#4ade80', '#f87171'],
                                     height=350)
                 fig_disease.update_traces(textposition='inside', textinfo='percent+label')
                 st.plotly_chart(fig_disease, use_container_width=True)
