@@ -1106,59 +1106,72 @@ def display_rabi_crops(df):
         if selected_rabi_crop:
             crop_data = rabi_df[rabi_df['Label'] == selected_rabi_crop].iloc[0]
             
-            st.markdown(f"""
-            <div class="card" style="margin-top: 15px;">
-                <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">{selected_rabi_crop} Requirements</h4>
+            # Header for requirements
+            st.subheader(f"{selected_rabi_crop} Requirements")
+            
+            # First row of metrics
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown("""
+                <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Temperature</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['Temperature']}°C</p>
+                </div>""", unsafe_allow_html=True)
                 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Temperature</p>
-                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['Temperature']}°C</p>
-                    </div>
-                    
-                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Humidity</p>
-                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['Humidity']}%</p>
-                    </div>
-                    
-                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">pH</p>
-                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['pH']}</p>
-                    </div>
-                </div>
+            with col2:
+                st.markdown("""
+                <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Humidity</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['Humidity']}%</p>
+                </div>""", unsafe_allow_html=True)
                 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">N</p>
-                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['N']} mg/kg</p>
-                    </div>
-                    
-                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">P</p>
-                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['P']} mg/kg</p>
-                    </div>
-                    
-                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">K</p>
-                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['K']} mg/kg</p>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            with col3:
+                st.markdown("""
+                <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">pH</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['pH']}</p>
+                </div>""", unsafe_allow_html=True)
+            
+            # Second row of metrics
+            st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown("""
+                <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">N</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['N']} mg/kg</p>
+                </div>""", unsafe_allow_html=True)
+                
+            with col2:
+                st.markdown("""
+                <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">P</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['P']} mg/kg</p>
+                </div>""", unsafe_allow_html=True)
+                
+            with col3:
+                st.markdown("""
+                <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">K</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['K']} mg/kg</p>
+                </div>""", unsafe_allow_html=True)
             
             # Show additional parameters if they exist
             additional_params = ['Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
             available_params = [param for param in additional_params if param in crop_data]
             
             if available_params:
-                st.markdown(f"""
-                <div class="card" style="margin-top: 15px;">
-                    <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">Additional Parameters</h4>
-                    
-                    <div style="display: grid; grid-template-columns: repeat({min(3, len(available_params))}, 1fr); gap: 10px; margin-bottom: 15px;">
-                """, unsafe_allow_html=True)
+                st.subheader("Additional Parameters")
                 
-                for param in available_params:
+                cols = st.columns(min(3, len(available_params)))
+                
+                for i, param in enumerate(available_params):
                     display_name = param.replace('_', ' ')
                     
                     # Add units based on parameter
@@ -1174,14 +1187,13 @@ def display_rabi_crops(df):
                     
                     value = crop_data[param]
                     
-                    st.markdown(f"""
-                        <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
-                            <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">{display_name}</p>
-                            <p style="margin: 0; font-weight: 600; color: #16a34a;">{value} {unit}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                
-                st.markdown("</div></div>", unsafe_allow_html=True)
+                    with cols[i % len(cols)]:
+                        st.markdown(f"""
+                            <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                                <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">{display_name}</p>
+                                <p style="margin: 0; font-weight: 600; color: #16a34a;">{value} {unit}</p>
+                            </div>
+                        """, unsafe_allow_html=True)
             
             # Display disease information if available
             disease_cols = [col for col in crop_data.index if 'Disease' in col and col != 'Disease_Resistance_Score']
@@ -1195,23 +1207,21 @@ def display_rabi_crops(df):
                         diseases.append(f"{crop_data[col]} ({disease_type})")
                 
                 if diseases:
+                    st.subheader("Disease Information")
+                    
                     st.markdown(f"""
-                    <div class="card" style="margin-top: 15px; background-color: #fff8f1; border-left: 4px solid #f97316;">
-                        <h4 style="color: #ea580c; font-size: 1.1rem; margin-bottom: 12px;">Disease Information</h4>
+                    <div style="margin-top: 10px; background-color: #fff8f1; border-left: 4px solid #f97316; padding: 15px; border-radius: 4px;">
                         <p style="margin: 0 0 10px; color: #4b5563;">Common diseases that affect {selected_rabi_crop}:</p>
-                        <ul style="padding-left: 20px; color: #4b5563; margin-bottom: 0;">
                     """, unsafe_allow_html=True)
                     
+                    # Display diseases as bullet points
                     for disease in diseases:
-                        st.markdown(f"<li style='margin-bottom: 5px;'>{disease}</li>", unsafe_allow_html=True)
+                        st.markdown(f"• {disease}", unsafe_allow_html=False)
                     
-                    st.markdown("</ul></div>", unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"""
-                    <div class="card" style="margin-top: 15px; background-color: #f0fdf4;">
-                        <p style="margin: 0; color: #16a34a; font-weight: 500;">✓ No common diseases recorded for {selected_rabi_crop} in our database.</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.subheader("Disease Information")
+                    st.success(f"✓ No common diseases recorded for {selected_rabi_crop} in our database.")
 
 # Kharif Crops Page
 def display_kharif_crops(df):
@@ -1433,59 +1443,72 @@ def display_kharif_crops(df):
         if selected_kharif_crop:
             crop_data = kharif_df[kharif_df['Label'] == selected_kharif_crop].iloc[0]
             
-            st.markdown(f"""
-            <div class="card" style="margin-top: 15px;">
-                <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">{selected_kharif_crop} Requirements</h4>
+            # Header for requirements
+            st.subheader(f"{selected_kharif_crop} Requirements")
+            
+            # First row of metrics
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown("""
+                <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Temperature</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['Temperature']}°C</p>
+                </div>""", unsafe_allow_html=True)
                 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Temperature</p>
-                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['Temperature']}°C</p>
-                    </div>
-                    
-                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Humidity</p>
-                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['Humidity']}%</p>
-                    </div>
-                    
-                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">pH</p>
-                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['pH']}</p>
-                    </div>
-                </div>
+            with col2:
+                st.markdown("""
+                <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Humidity</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['Humidity']}%</p>
+                </div>""", unsafe_allow_html=True)
                 
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">N</p>
-                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['N']} mg/kg</p>
-                    </div>
-                    
-                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">P</p>
-                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['P']} mg/kg</p>
-                    </div>
-                    
-                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">K</p>
-                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['K']} mg/kg</p>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            with col3:
+                st.markdown("""
+                <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">pH</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['pH']}</p>
+                </div>""", unsafe_allow_html=True)
+            
+            # Second row of metrics
+            st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.markdown("""
+                <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">N</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['N']} mg/kg</p>
+                </div>""", unsafe_allow_html=True)
+                
+            with col2:
+                st.markdown("""
+                <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">P</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['P']} mg/kg</p>
+                </div>""", unsafe_allow_html=True)
+                
+            with col3:
+                st.markdown("""
+                <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">K</p>
+                """, unsafe_allow_html=True)
+                st.markdown(f"""<p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['K']} mg/kg</p>
+                </div>""", unsafe_allow_html=True)
             
             # Show additional parameters if they exist
             additional_params = ['Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
             available_params = [param for param in additional_params if param in crop_data]
             
             if available_params:
-                st.markdown(f"""
-                <div class="card" style="margin-top: 15px;">
-                    <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">Additional Parameters</h4>
-                    
-                    <div style="display: grid; grid-template-columns: repeat({min(3, len(available_params))}, 1fr); gap: 10px; margin-bottom: 15px;">
-                """, unsafe_allow_html=True)
+                st.subheader("Additional Parameters")
                 
-                for param in available_params:
+                cols = st.columns(min(3, len(available_params)))
+                
+                for i, param in enumerate(available_params):
                     display_name = param.replace('_', ' ')
                     
                     # Add units based on parameter
@@ -1501,14 +1524,13 @@ def display_kharif_crops(df):
                     
                     value = crop_data[param]
                     
-                    st.markdown(f"""
-                        <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
-                            <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">{display_name}</p>
-                            <p style="margin: 0; font-weight: 600; color: #0284c7;">{value} {unit}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                
-                st.markdown("</div></div>", unsafe_allow_html=True)
+                    with cols[i % len(cols)]:
+                        st.markdown(f"""
+                            <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                                <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">{display_name}</p>
+                                <p style="margin: 0; font-weight: 600; color: #0284c7;">{value} {unit}</p>
+                            </div>
+                        """, unsafe_allow_html=True)
             
             # Display disease information if available
             disease_cols = [col for col in crop_data.index if 'Disease' in col and col != 'Disease_Resistance_Score']
@@ -1522,23 +1544,21 @@ def display_kharif_crops(df):
                         diseases.append(f"{crop_data[col]} ({disease_type})")
                 
                 if diseases:
+                    st.subheader("Disease Information")
+                    
                     st.markdown(f"""
-                    <div class="card" style="margin-top: 15px; background-color: #fff8f1; border-left: 4px solid #f97316;">
-                        <h4 style="color: #ea580c; font-size: 1.1rem; margin-bottom: 12px;">Disease Information</h4>
+                    <div style="margin-top: 10px; background-color: #fff8f1; border-left: 4px solid #f97316; padding: 15px; border-radius: 4px;">
                         <p style="margin: 0 0 10px; color: #4b5563;">Common diseases that affect {selected_kharif_crop}:</p>
-                        <ul style="padding-left: 20px; color: #4b5563; margin-bottom: 0;">
                     """, unsafe_allow_html=True)
                     
+                    # Display diseases as bullet points
                     for disease in diseases:
-                        st.markdown(f"<li style='margin-bottom: 5px;'>{disease}</li>", unsafe_allow_html=True)
+                        st.markdown(f"• {disease}", unsafe_allow_html=False)
                     
-                    st.markdown("</ul></div>", unsafe_allow_html=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"""
-                    <div class="card" style="margin-top: 15px; background-color: #f0f9ff;">
-                        <p style="margin: 0; color: #0284c7; font-weight: 500;">✓ No common diseases recorded for {selected_kharif_crop} in our database.</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.subheader("Disease Information")
+                    st.success(f"✓ No common diseases recorded for {selected_kharif_crop} in our database.")
 
 if __name__ == "__main__":
     main()
