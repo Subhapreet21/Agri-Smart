@@ -217,7 +217,7 @@ def display_home(df):
     # Crop distribution visualization
     fig_dist = px.pie(df, names='Label', 
                       title='Distribution of Crops',
-                      color_discrete_sequence=GREEN_PALETTE,
+                      color_discrete_sequence=px.colors.qualitative.Bold,
                       height=400)
     fig_dist.update_traces(textposition='inside', textinfo='percent+label')
     fig_dist.update_layout(
@@ -954,7 +954,7 @@ def display_rabi_crops(df):
     
     fig_dist = px.pie(rabi_df, names='Label', 
                      title='Distribution of Rabi Crops',
-                     color_discrete_sequence=px.colors.sequential.Greens,
+                     color_discrete_sequence=px.colors.qualitative.Vivid,
                      height=400)
     fig_dist.update_traces(textposition='inside', textinfo='percent+label')
     fig_dist.update_layout(
@@ -1033,7 +1033,7 @@ def display_rabi_crops(df):
                 # Create pie chart
                 fig_disease = px.pie(disease_prone_counts, names='Status', values='Count',
                                     title='Disease Proneness of Rabi Crops',
-                                    color_discrete_sequence=['#4ade80', '#f87171'],
+                                    color_discrete_sequence=['#10b981', '#f43f5e'],
                                     height=350)
                 fig_disease.update_traces(textposition='inside', textinfo='percent+label')
                 st.plotly_chart(fig_disease, use_container_width=True)
@@ -1290,7 +1290,7 @@ def display_kharif_crops(df):
     
     fig_dist = px.pie(kharif_df, names='Label', 
                      title='Distribution of Kharif Crops',
-                     color_discrete_sequence=BLUE_PALETTE,
+                     color_discrete_sequence=px.colors.qualitative.Pastel,
                      height=400)
     fig_dist.update_traces(textposition='inside', textinfo='percent+label')
     fig_dist.update_layout(
@@ -1369,7 +1369,7 @@ def display_kharif_crops(df):
                 # Create pie chart
                 fig_disease = px.pie(disease_prone_counts, names='Status', values='Count',
                                     title='Disease Proneness of Kharif Crops',
-                                    color_discrete_sequence=['#4ade80', '#f87171'],
+                                    color_discrete_sequence=['#10b981', '#f43f5e'],
                                     height=350)
                 fig_disease.update_traces(textposition='inside', textinfo='percent+label')
                 st.plotly_chart(fig_disease, use_container_width=True)
