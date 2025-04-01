@@ -3,11 +3,15 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import time
+import os
 
 from crop_recommendation import load_crop_recommendation_model, predict_crop
 from disease_identification import identify_disease
 from data_visualization import display_crop_distribution, display_feature_importance, display_parameter_ranges
 from utils import load_crop_data, get_crop_info, preprocess_features
+
+# Create models directory if it doesn't exist
+os.makedirs('models', exist_ok=True)
 
 # Set page config
 st.set_page_config(

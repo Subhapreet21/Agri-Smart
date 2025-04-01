@@ -55,8 +55,8 @@ def load_crop_recommendation_model():
         with open('models/crop_recommendation_model.pkl', 'rb') as f:
             model_data = pickle.load(f)
         return model_data
-    except FileNotFoundError:
-        # If model doesn't exist, train it
+    except (FileNotFoundError, pickle.UnpicklingError):
+        # If model doesn't exist or has errors, train it
         return train_crop_recommendation_model()
 
 def predict_crop(model_data, X):
