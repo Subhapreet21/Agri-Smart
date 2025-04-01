@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 import time
 import os
+from streamlit_option_menu import option_menu
 
 from crop_recommendation import load_crop_recommendation_model, predict_crop
 from disease_identification import identify_disease
@@ -36,35 +37,44 @@ def main():
     df = load_data()
     model = load_model()
     
-    # Sidebar navigation
-    st.sidebar.title("Agri-Smart 🌱")
-    st.sidebar.image("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f33f.svg", width=100)
+    # Apply custom CSS
+    try:
+        with open('assets/custom.css') as f:
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    except Exception as e:
+        pass  # Silently ignore if the file doesn't exist
     
-    # Add description
-    st.sidebar.markdown("""
-    **Agri-Smart** is your intelligent agricultural 
-    advisory system that helps make data-driven 
-    farming decisions.
-    """)
+    # Sidebar navigation with option_menu
+    with st.sidebar:
+        st.title("🌿 Agri-Smart")
+        
+        # Use option_menu for navigation
+        navigation = option_menu(
+            menu_title=None,
+            options=["Dashboard", "Crop Recommendation", "Disease Detection", "Data Insights"],
+            icons=["house-fill", "flower1", "bug-fill", "graph-up"],
+            menu_icon="cast",
+            default_index=0,
+            styles={
+                "container": {"padding": "5px", "background-color": "#a2ffa6"},
+                "icon": {"color": "#099313", "font-size": "25px"},
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#4EE556"},
+                "nav-link-selected": {"background-color": "#4EE556", "color": "black", "font-weight": "normal"},
+            }
+        )
+        
+        # Add description below navigation
+        st.markdown("""
+        **Agri-Smart** is your intelligent agricultural 
+        advisory system that helps make data-driven 
+        farming decisions.
+        """)
     
-    # Navigation with custom icons
-    st.sidebar.markdown("### Navigation")
-    
-    navigation = st.sidebar.radio(
-        "",
-        ["🏠 Home", "🌾 Crop Recommendation", "🔍 Disease Identification", "📊 Data Insights"],
-        format_func=lambda x: x.split(" ", 1)[1] if " " in x else x
-    )
-    
-    # Strip emoji from navigation for processing
-    if "🏠" in navigation:
+    # Map option_menu selections to our existing pages
+    if navigation == "Dashboard":
         navigation = "Home"
-    elif "🌾" in navigation:
-        navigation = "Crop Recommendation"  
-    elif "🔍" in navigation:
+    elif navigation == "Disease Detection":
         navigation = "Disease Identification"
-    elif "📊" in navigation:
-        navigation = "Data Insights"
     
     # Home Page
     if navigation == "Home":
@@ -87,63 +97,125 @@ def main():
         st.error("Page not found. Please select a valid navigation option.")
 
     # Footer
-    st.sidebar.markdown("---")
-    st.sidebar.caption("© 2023 Agri-Smart | Agricultural Advisory System")
-
-# Home Page
-def display_home():
-    st.title("Welcome to Agri-Smart 🌱")
-    
     st.markdown("""
-    ### Your Agricultural Advisory Companion
+        <div style="text-align: center; margin-top: 2rem; padding: 1rem; background-color: white; border-radius: 8px;">
+            <p>Agri-Smart - Making farming smarter with data 🌱</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+# Dashboard/Home Page
+def display_home():
+    st.title("🌿 Agri-Smart Dashboard")
     
-    Agri-Smart helps farmers make informed decisions about crop selection and disease management.
+    # Create a banner with statistics
+    st.markdown("""
+    <div style="background-color: #4EE556; padding: 20px; border-radius: 8px; margin-bottom: 20px; color: black;">
+        <h2 style="text-align: center; margin-bottom: 15px;">Your Smart Farming Assistant</h2>
+        <p style="text-align: center;">
+            Making data-driven decisions in agriculture simpler and more accessible
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    **Key Features:**
-    - 🌾 **Crop Recommendation**: Get personalized crop suggestions based on soil parameters and environmental conditions
-    - 🔍 **Disease Identification**: Identify crop diseases by uploading images
-    - 📊 **Data Insights**: Explore agricultural data visualizations and analytics
-    
-    *Use the sidebar to navigate through different sections of the application.*
-    """)
-    
-    # Display feature highlights in columns
+    # Create three statistics cards
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("### 🌾 Crop Recommendation")
         st.markdown("""
-        Input your soil parameters and environmental conditions to get personalized crop recommendations.
-        
-        - N, P, K values
-        - pH level
-        - Temperature
-        - Humidity
-        - Rainfall
-        """)
-        st.button("Try Crop Recommendation →", on_click=lambda: st.session_state.update({"navigation": "Crop Recommendation"}))
+        <div style="background-color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h1 style="color: #4CAF50; font-size: 40px;">35+</h1>
+            <p>Supported Crops</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("### 🔍 Disease Identification")
         st.markdown("""
-        Upload images of your crops to identify potential diseases.
-        
-        - Disease detection
-        - Treatment suggestions
-        - Preventive measures
-        """)
-        st.button("Try Disease Identification →", on_click=lambda: st.session_state.update({"navigation": "Disease Identification"}))
+        <div style="background-color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h1 style="color: #4CAF50; font-size: 40px;">90%</h1>
+            <p>Recommendation Accuracy</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     with col3:
-        st.markdown("### 📊 Data Insights")
         st.markdown("""
-        Explore agricultural data visualizations and analytics.
-        
-        - Crop distribution
-        - Parameter analysis
-        - Feature importance
-        """)
-        st.button("Explore Data Insights →", on_click=lambda: st.session_state.update({"navigation": "Data Insights"}))
+        <div style="background-color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h1 style="color: #4CAF50; font-size: 40px;">20+</h1>
+            <p>Disease Patterns</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Feature cards
+    st.markdown("### Our Features")
+    feature_col1, feature_col2, feature_col3 = st.columns(3)
+    
+    with feature_col1:
+        st.markdown("""
+        <div style="background-color: white; padding: 20px; border-radius: 8px; height: 280px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="color: #097809;">🌾 Crop Recommendation</h3>
+            <p>Get personalized crop suggestions based on your soil parameters and environmental conditions.</p>
+            <ul>
+                <li>AI-powered recommendations</li>
+                <li>Considers NPK, pH, climate</li>
+                <li>Detailed crop information</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        st.button("Try Crop Recommendation →", key="dash_crop_rec", on_click=lambda: st.session_state.update({"navigation": "Crop Recommendation"}))
+    
+    with feature_col2:
+        st.markdown("""
+        <div style="background-color: white; padding: 20px; border-radius: 8px; height: 280px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="color: #097809;">🔍 Disease Detection</h3>
+            <p>Upload crop images to identify diseases and get treatment recommendations.</p>
+            <ul>
+                <li>Visual disease recognition</li>
+                <li>Customized treatment plans</li>
+                <li>Preventive measures</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        st.button("Try Disease Detection →", key="dash_disease", on_click=lambda: st.session_state.update({"navigation": "Disease Identification"}))
+    
+    with feature_col3:
+        st.markdown("""
+        <div style="background-color: white; padding: 20px; border-radius: 8px; height: 280px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="color: #097809;">📊 Data Insights</h3>
+            <p>Explore visualizations and analytics about crops and their growing conditions.</p>
+            <ul>
+                <li>Crop distribution data</li>
+                <li>Parameter analysis</li>
+                <li>Feature importance</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        st.button("Explore Data Insights →", key="dash_insights", on_click=lambda: st.session_state.update({"navigation": "Data Insights"}))
+    
+    # Supported crops section
+    st.markdown("### Supported Crops")
+    st.markdown("""
+    <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <p>Our system provides recommendations and insights for a wide variety of crops including:</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Display crops in columns
+    crop_groups = [
+        ["Wheat", "Barley", "Oat", "Peas", "Potato", "Tomato", "Beet", "Cabbage"],
+        ["Alfalfa", "Garlic", "Onion", "Cumin", "Coriander", "Fennel", "Linseed", "Sunflower"],
+        ["Mustard", "Amaranth", "Cauliflower", "Paddy", "Maize", "Bajra", "Jowar", "Soybean"],
+        ["Castor", "Cotton", "Sugarcane", "Turmeric", "Chilly", "Bitter Gourd", "Guar", "Okra"],
+        ["Brinjal", "Turmeric", "Ragi"]
+    ]
+    
+    for group in crop_groups:
+        crop_cols = st.columns(len(group))
+        for i, crop in enumerate(group):
+            with crop_cols[i]:
+                st.markdown(f"""
+                <div style="background-color: #f0fff0; padding: 10px; border-radius: 5px; text-align: center; margin: 5px;">
+                    <p style="margin: 0; color: #097809;"><strong>{crop}</strong></p>
+                </div>
+                """, unsafe_allow_html=True)
     
     # If button clicked, navigate to the corresponding page
     if "navigation" in st.session_state:

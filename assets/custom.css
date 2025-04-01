@@ -1,0 +1,42 @@
+/* Custom CSS for Agri-Smart */
+.main {
+    background-color: #f8fff9;
+}
+
+h1, h2, h3 {
+    color: #097809;
+}
+
+.stButton>button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 24px;
+    transition: all 0.3s;
+}
+
+.stButton>button:hover {
+    background-color: #45a049;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar styling */
+section[data-testid="stSidebar"] {
+    background-color: #f0fff1;
+    border-right: 1px solid #4CAF50;
+}
+
+/* Card styling for the home page */
+div.stMarkdown div.element-container:nth-child(3n) div.stMarkdown {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+div.stMarkdown div.element-container:nth-child(3n) div.stMarkdown:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
