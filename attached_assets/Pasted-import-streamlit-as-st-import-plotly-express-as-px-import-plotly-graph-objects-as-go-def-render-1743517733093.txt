@@ -1,0 +1,57 @@
+import streamlit as st
+import plotly.express as px
+import plotly.graph_objects as go
+
+def render_dashboard(df, stats):
+    """Render the main dashboard"""
+    st.title("🌿 Agri-Smart Dashboard")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+            <div class="stat-card">
+                <h3>Total Crops</h3>
+                <h2>{}</h2>
+            </div>
+        """.format(stats['total_crops']), unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("""
+            <div class="stat-card">
+                <h3>Success Rate</h3>
+                <h2>87.6%</h2>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown("""
+            <div class="stat-card">
+                <h3>Disease Types</h3>
+                <h2>{}</h2>
+            </div>
+        """.format(len(stats['common_diseases'])+1), unsafe_allow_html=True)
+
+    st.subheader("Crop Distribution")
+    fig_dist = px.pie(df, names='label', 
+                      title='Distribution of Crops',
+                      color_discrete_sequence=px.colors.qualitative.Pastel,
+                      height=400)
+    st.plotly_chart(fig_dist, use_container_width=True)
+    st.subheader("Environmental Parameters by Crop")
+    param = st.selectbox("Select Parameter", 
+                        ['temperature', 'humidity', 'ph', 'rainfall'])
+    
+    fig_param = px.box(df, x='label', y=param,
+                       title=f'{param.title()} Distribution by Crop',
+                       color_discrete_sequence=['#2E7D32'],
+                       height=400)
+    st.plotly_chart(fig_param, use_container_width=True)
+
+    st.subheader("Disease Probability by Crop")
+    fig_disease = px.bar(df.groupby('label')['Disease_Prone'].mean().reset_index(),
+                        x='label', y='Disease_Prone',
+                        title='Disease Probability by Crop',
+                        color_discrete_sequence=['#FFC107'],
+                        height=400)
+    st.plotly_chart(fig_disease, use_container_width=True)

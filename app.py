@@ -5,6 +5,8 @@ from PIL import Image
 import time
 import os
 from streamlit_option_menu import option_menu
+import plotly.express as px
+import plotly.graph_objects as go
 
 from crop_recommendation import load_crop_recommendation_model, predict_crop
 from disease_identification import identify_disease
@@ -94,7 +96,7 @@ def main():
     
     # Home Page
     if navigation == "Home":
-        display_home()
+        display_home(df)
     
     # Crop Recommendation Page
     elif navigation == "Crop Recommendation":
@@ -121,7 +123,7 @@ def main():
     """, unsafe_allow_html=True)
 
 # Dashboard/Home Page
-def display_home():
+def display_home(df):
     st.title("🌿 Agri-Smart Dashboard")
     
     # Create a banner with statistics - modern design
@@ -134,35 +136,131 @@ def display_home():
     </div>
     """, unsafe_allow_html=True)
     
+    # Calculate statistics for the dashboard from the dataset
+    # Get total unique crops
+    unique_crops = df['Label'].nunique()
+    
+    # Get common diseases count - estimate based on disease prone crops
+    common_diseases = []
+    for col in ['Common_Disease(Fungal)', 'Common_Disease(Bacterial)', 'Common_Disease(Viral)']:
+        diseases = df[col].dropna().unique().tolist()
+        common_diseases.extend([d for d in diseases if d != 'None'])
+    common_diseases = list(set(common_diseases))
+    
+    # Create statistics dictionary
+    stats = {
+        'total_crops': unique_crops,
+        'common_diseases': common_diseases
+    }
+    
     # Create three statistics cards with modern styling
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("""
+        st.markdown(f"""
         <div class="dashboard-card">
-            <p class="metric-value">35+</p>
-            <p class="metric-label">Supported Crops</p>
+            <p class="metric-value">{stats['total_crops']}</p>
+            <p class="metric-label">Total Crops</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
         <div class="dashboard-card">
-            <p class="metric-value">90%</p>
-            <p class="metric-label">Recommendation Accuracy</p>
+            <p class="metric-value">87.6%</p>
+            <p class="metric-label">Success Rate</p>
         </div>
         """, unsafe_allow_html=True)
     
     with col3:
-        st.markdown("""
+        st.markdown(f"""
         <div class="dashboard-card">
-            <p class="metric-value">20+</p>
-            <p class="metric-label">Disease Patterns</p>
+            <p class="metric-value">{len(stats['common_diseases'])+1}</p>
+            <p class="metric-label">Disease Types</p>
         </div>
         """, unsafe_allow_html=True)
     
+    # Data visualizations in modern card style
+    st.markdown("""
+    <div class="card">
+        <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">Crop Distribution</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Crop distribution visualization
+    fig_dist = px.pie(df, names='Label', 
+                      title='Distribution of Crops',
+                      color_discrete_sequence=px.colors.sequential.Greens,
+                      height=400)
+    fig_dist.update_traces(textposition='inside', textinfo='percent+label')
+    fig_dist.update_layout(
+        title_font_size=18,
+        font=dict(family="Inter, sans-serif", size=14),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
+    )
+    st.plotly_chart(fig_dist, use_container_width=True)
+    
+    # Parameter selection for parameter analysis
+    st.markdown("""
+    <div class="card">
+        <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">Environmental Parameters by Crop</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    param = st.selectbox("Select Parameter", 
+                        ['Temperature', 'Humidity', 'pH', 'Rainfall'],
+                        format_func=lambda x: {'Temperature': 'Temperature', 'Humidity': 'Humidity', 
+                                              'pH': 'pH', 'Rainfall': 'Rainfall'}[x])
+    
+    # Parameter distribution visualization                      
+    fig_param = px.box(df, x='Label', y=param,
+                       title=f'{param.title()} Distribution by Crop',
+                       color_discrete_sequence=['#16a34a'],
+                       height=400)
+    fig_param.update_layout(
+        title_font_size=18,
+        font=dict(family="Inter, sans-serif", size=14),
+        xaxis_title="Crop",
+        yaxis_title=param.title(),
+        xaxis={'categoryorder':'total ascending'}
+    )
+    st.plotly_chart(fig_param, use_container_width=True)
+    
+    # Check if Disease_Prone column exists in the dataframe
+    if 'Disease_Prone' in df.columns:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">Disease Probability by Crop</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Convert Disease_Prone to numeric for visualization
+        df_disease = df.copy()
+        df_disease['Disease_Prone_Numeric'] = df_disease['Disease_Prone'].apply(lambda x: 1 if x == 'Yes' else 0)
+        
+        # Disease probability visualization
+        fig_disease = px.bar(df_disease.groupby('Label')['Disease_Prone_Numeric'].mean().reset_index(),
+                            x='Label', y='Disease_Prone_Numeric',
+                            title='Disease Probability by Crop',
+                            color_discrete_sequence=['#16a34a'],
+                            height=400)
+        fig_disease.update_layout(
+            title_font_size=18,
+            font=dict(family="Inter, sans-serif", size=14),
+            xaxis_title="Crop",
+            yaxis_title="Disease Probability",
+            xaxis={'categoryorder':'total descending'},
+            yaxis={'tickformat': ',.0%'}
+        )
+        st.plotly_chart(fig_disease, use_container_width=True)
+    
     # Feature cards with modern styling
-    st.markdown("### Our Features")
+    st.markdown("""
+    <div class="card">
+        <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">Our Features</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
     feature_col1, feature_col2, feature_col3 = st.columns(3)
     
     with feature_col1:
@@ -208,10 +306,10 @@ def display_home():
         st.button("Explore Data Insights →", key="dash_insights", on_click=lambda: st.session_state.update({"navigation": "Data Insights"}))
     
     # Supported crops section - modern design
-    st.markdown("### Supported Crops")
     st.markdown("""
-    <div class="card" style="margin-bottom: 20px;">
-        <p style="margin: 0; color: #4b5563;">Our system provides recommendations and insights for a wide variety of crops including:</p>
+    <div class="card">
+        <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">Supported Crops</h3>
+        <p style="margin: 0 0 15px; color: #4b5563;">Our system provides recommendations and insights for a wide variety of crops including:</p>
     </div>
     """, unsafe_allow_html=True)
     
