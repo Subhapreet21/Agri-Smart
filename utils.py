@@ -63,25 +63,15 @@ def preprocess_features(input_features):
     Returns:
         NumPy array of preprocessed features
     """
+    # Base features that are always used
+    base_features = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']
+    
     # Get the feature values in the correct order
-    feature_names = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall', 
-                    'Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
-    
-    # Set default values for new features if not provided in input
-    default_values = {
-        'Salinity_dS_m': 2.0,  # Default salinity
-        'Water_Requirement': 400.0,  # Default water requirement
-        'Disease_Resistance_Score': 5.0  # Default disease resistance score
-    }
-    
-    # For each feature, use the provided value or the default
     feature_values = []
-    for feature in feature_names:
-        if feature in input_features:
-            feature_values.append(input_features[feature])
-        else:
-            feature_values.append(default_values.get(feature, 0))
+    for feature in base_features:
+        feature_values.append(input_features.get(feature, 0))
     
+    # Create the features array
     X = np.array([feature_values])
     
     return X
@@ -97,8 +87,18 @@ def extract_crop_parameter_ranges(df):
         Dictionary with parameter ranges for each crop
     """
     crops = df['Label'].unique()
-    parameters = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall', 
-                 'Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
+    
+    # Base parameters that are always present
+    base_parameters = ['N', 'P', 'K', 'Temperature', 'Humidity', 'pH', 'Rainfall']
+    
+    # Extended parameters that might be present
+    extended_parameters = ['Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
+    
+    # Determine which parameters exist in the dataset
+    parameters = base_parameters.copy()
+    for param in extended_parameters:
+        if param in df.columns:
+            parameters.append(param)
     
     crop_ranges = {}
     
@@ -108,11 +108,21 @@ def extract_crop_parameter_ranges(df):
         crop_ranges[crop] = {}
         
         for param in parameters:
-            crop_ranges[crop][param] = {
-                'min': crop_data[param].min(),
-                'max': crop_data[param].max(),
-                'mean': crop_data[param].mean(),
-                'median': crop_data[param].median()
-            }
+            if param in df.columns:
+                try:
+                    crop_ranges[crop][param] = {
+                        'min': crop_data[param].min(),
+                        'max': crop_data[param].max(),
+                        'mean': crop_data[param].mean(),
+                        'median': crop_data[param].median()
+                    }
+                except:
+                    # If parameter values can't be calculated, use placeholders
+                    crop_ranges[crop][param] = {
+                        'min': 0,
+                        'max': 0,
+                        'mean': 0,
+                        'median': 0
+                    }
     
     return crop_ranges
