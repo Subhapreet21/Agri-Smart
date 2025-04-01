@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 
 from crop_recommendation import load_crop_recommendation_model, predict_crop
 from disease_identification import identify_disease
-from data_visualization import display_crop_distribution, display_feature_importance, display_parameter_ranges, display_parameter_analytics
+from data_visualization import display_crop_distribution, display_feature_importance, display_parameter_ranges
 from utils import load_crop_data, get_crop_info, preprocess_features
 
 # Create models directory if it doesn't exist
@@ -716,7 +716,7 @@ def display_data_insights(df):
     """, unsafe_allow_html=True)
     
     # Modern tabs using Streamlit's tab component
-    tab1, tab2, tab3, tab4 = st.tabs(["Crop Distribution", "Parameter Analysis", "Advanced Analytics", "Feature Importance"])
+    tab1, tab2, tab3 = st.tabs(["Crop Distribution", "Parameter Analysis", "Feature Importance"])
     
     # Tab 1: Crop Distribution with modern styling
     with tab1:
@@ -738,18 +738,8 @@ def display_data_insights(df):
         """, unsafe_allow_html=True)
         display_parameter_ranges(df)
     
-    # Tab 3: Advanced Analytics with parameter correlations and visualizations
+    # Tab 3: Feature Importance with modern styling
     with tab3:
-        st.markdown("""
-        <div class="card">
-            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Advanced Data Analytics</h3>
-            <p style="margin: 0 0 15px; color: #4b5563;">Analyze parameter correlations, relationships, and success rates across different growing seasons.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        display_parameter_analytics(df)
-    
-    # Tab 4: Feature Importance with modern styling
-    with tab4:
         st.markdown("""
         <div class="card">
             <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Feature Importance for Crop Selection</h3>
