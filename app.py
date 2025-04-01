@@ -887,5 +887,658 @@ def display_data_insights(df):
     </div>
     """, unsafe_allow_html=True)
 
+# Rabi Crops Page
+def display_rabi_crops(df):
+    st.title("Rabi Crops Analysis 🌾")
+    
+    # Introduction with modern styling
+    st.markdown("""
+    <div class="card" style="margin-bottom: 25px;">
+        <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 10px;">Rabi Season Crop Insights</h3>
+        <p style="margin: 0; color: #4b5563;">Rabi crops are sown in winter and harvested in spring. This page provides specific analysis and insights for Rabi crops.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Filter dataframe for Rabi crops only
+    rabi_df = df[df['Season'] == 'Rabi']
+    
+    # Display error if no Rabi crops found
+    if len(rabi_df) == 0:
+        st.error("No Rabi crops found in the dataset.")
+        return
+    
+    # Create two columns for statistics
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Total Rabi crops count
+        st.markdown(f"""
+        <div class="dashboard-card">
+            <p class="metric-value">{rabi_df['Label'].nunique()}</p>
+            <p class="metric-label">Rabi Crop Varieties</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        # Disease prone percentage
+        if 'Disease_Prone' in rabi_df.columns:
+            disease_prone_pct = rabi_df[rabi_df['Disease_Prone'] == 'Yes'].shape[0] / rabi_df.shape[0] * 100
+            st.markdown(f"""
+            <div class="dashboard-card">
+                <p class="metric-value">{disease_prone_pct:.1f}%</p>
+                <p class="metric-label">Disease Prone</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Rabi crop distribution
+    st.markdown("""
+    <div class="card">
+        <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">Rabi Crop Distribution</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    fig_dist = px.pie(rabi_df, names='Label', 
+                     title='Distribution of Rabi Crops',
+                     color_discrete_sequence=px.colors.sequential.Greens,
+                     height=400)
+    fig_dist.update_traces(textposition='inside', textinfo='percent+label')
+    fig_dist.update_layout(
+        title_font_size=18,
+        font=dict(family="Inter, sans-serif", size=14),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
+    )
+    st.plotly_chart(fig_dist, use_container_width=True)
+    
+    # Modern tabs for different analyses
+    tab1, tab2, tab3 = st.tabs(["Parameter Analysis", "Disease Analysis", "Recommendations"])
+    
+    # Tab 1: Parameter Analysis
+    with tab1:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Parameter Requirements for Rabi Crops</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Compare soil and environmental parameter requirements across different Rabi crops.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Parameter selection
+        param = st.selectbox("Select Parameter", 
+                           ['Temperature', 'Humidity', 'pH', 'Rainfall', 'N', 'P', 'K'],
+                           key="rabi_param",
+                           format_func=lambda x: {'Temperature': 'Temperature (°C)', 
+                                                'Humidity': 'Humidity (%)', 
+                                                'pH': 'pH Level', 
+                                                'Rainfall': 'Rainfall (mm)',
+                                                'N': 'Nitrogen (N)',
+                                                'P': 'Phosphorus (P)',
+                                                'K': 'Potassium (K)'}[x])
+        
+        # Parameter comparison chart
+        fig_param = px.box(rabi_df, x='Label', y=param,
+                          title=f'{param} Requirements for Rabi Crops',
+                          color='Label',
+                          height=450)
+        fig_param.update_layout(
+            xaxis_title="Crop",
+            yaxis_title=param,
+            showlegend=False
+        )
+        st.plotly_chart(fig_param, use_container_width=True)
+        
+        # Parameter summary table
+        st.subheader("Parameter Summary")
+        
+        # Calculate statistics for each crop and parameter
+        param_summary = rabi_df.groupby('Label')[param].agg(['min', 'max', 'mean', 'median']).reset_index()
+        param_summary.columns = ['Crop', 'Minimum', 'Maximum', 'Average', 'Median']
+        param_summary = param_summary.round(2)
+        
+        # Display summary table with styling
+        st.dataframe(param_summary, use_container_width=True)
+    
+    # Tab 2: Disease Analysis
+    with tab2:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Disease Analysis for Rabi Crops</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Understand disease patterns and susceptibility among Rabi crops.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Check if disease columns exist
+        disease_cols = [col for col in rabi_df.columns if 'Disease' in col]
+        
+        if len(disease_cols) > 0:
+            # Disease prone distribution
+            if 'Disease_Prone' in disease_cols:
+                # Count occurrences
+                disease_prone_counts = rabi_df['Disease_Prone'].value_counts().reset_index()
+                disease_prone_counts.columns = ['Status', 'Count']
+                
+                # Create pie chart
+                fig_disease = px.pie(disease_prone_counts, names='Status', values='Count',
+                                    title='Disease Proneness of Rabi Crops',
+                                    color_discrete_sequence=['#81C784', '#FF8A65'],
+                                    height=350)
+                fig_disease.update_traces(textposition='inside', textinfo='percent+label')
+                st.plotly_chart(fig_disease, use_container_width=True)
+            
+            # Common diseases
+            disease_types = ['Common_Disease(Fungal)', 'Common_Disease(Bacterial)', 'Common_Disease(Viral)']
+            available_types = [col for col in disease_types if col in rabi_df.columns]
+            
+            if available_types:
+                st.subheader("Common Diseases in Rabi Crops")
+                
+                for disease_type in available_types:
+                    # Skip if column doesn't exist
+                    if disease_type not in rabi_df.columns:
+                        continue
+                    
+                    # Get non-None diseases
+                    disease_data = rabi_df[rabi_df[disease_type] != 'None']
+                    
+                    if len(disease_data) > 0:
+                        # Format disease type for display
+                        display_type = disease_type.replace('Common_Disease(', '').replace(')', '')
+                        
+                        st.markdown(f"##### {display_type} Diseases")
+                        
+                        # Count occurrences of each disease
+                        disease_counts = disease_data[disease_type].value_counts().reset_index()
+                        disease_counts.columns = ['Disease', 'Count']
+                        
+                        # Create horizontal bar chart
+                        fig_disease_count = px.bar(disease_counts, 
+                                                 y='Disease', 
+                                                 x='Count',
+                                                 title=f'Common {display_type} Diseases in Rabi Crops',
+                                                 color_discrete_sequence=['#16a34a'],
+                                                 height=max(250, len(disease_counts) * 50))
+                        fig_disease_count.update_layout(xaxis_title="Number of Crops Affected")
+                        st.plotly_chart(fig_disease_count, use_container_width=True)
+                        
+                    else:
+                        display_type = disease_type.replace('Common_Disease(', '').replace(')', '')
+                        st.info(f"No common {display_type.lower()} diseases found for Rabi crops in the dataset.")
+        else:
+            st.info("No disease information available in the dataset.")
+    
+    # Tab 3: Recommendations
+    with tab3:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Recommendations for Rabi Crops</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Best practices and recommendations for growing Rabi crops.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # General recommendations for Rabi crops
+        st.markdown("""
+        <div class="card">
+            <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">General Best Practices</h4>
+            <ul style="padding-left: 20px; color: #4b5563;">
+                <li style="margin-bottom: 8px;">Prepare the land in September-October, before the soil moisture depletes.</li>
+                <li style="margin-bottom: 8px;">Apply adequate organic matter to the soil during land preparation.</li>
+                <li style="margin-bottom: 8px;">Ensure proper seed treatment before sowing to prevent diseases.</li>
+                <li style="margin-bottom: 8px;">Maintain optimum soil moisture during the early growth stages.</li>
+                <li style="margin-bottom: 8px;">Apply fertilizers as per crop requirements and soil test recommendations.</li>
+                <li style="margin-bottom: 8px;">Monitor for pest and disease outbreaks regularly during the growing season.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Crop-specific recommendations
+        st.markdown("""
+        <div class="card" style="margin-top: 20px;">
+            <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">Select a Crop for Specific Recommendations</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Dropdown to select a crop
+        selected_rabi_crop = st.selectbox(
+            "Choose a Rabi crop",
+            options=rabi_df['Label'].unique(),
+            key="rabi_crop_select"
+        )
+        
+        # Display crop-specific info
+        if selected_rabi_crop:
+            crop_data = rabi_df[rabi_df['Label'] == selected_rabi_crop].iloc[0]
+            
+            st.markdown(f"""
+            <div class="card" style="margin-top: 15px;">
+                <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">{selected_rabi_crop} Requirements</h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Temperature</p>
+                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['Temperature']}°C</p>
+                    </div>
+                    
+                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Humidity</p>
+                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['Humidity']}%</p>
+                    </div>
+                    
+                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">pH</p>
+                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['pH']}</p>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">N</p>
+                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['N']} mg/kg</p>
+                    </div>
+                    
+                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">P</p>
+                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['P']} mg/kg</p>
+                    </div>
+                    
+                    <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">K</p>
+                        <p style="margin: 0; font-weight: 600; color: #16a34a;">{crop_data['K']} mg/kg</p>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Show additional parameters if they exist
+            additional_params = ['Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
+            available_params = [param for param in additional_params if param in crop_data]
+            
+            if available_params:
+                st.markdown(f"""
+                <div class="card" style="margin-top: 15px;">
+                    <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">Additional Parameters</h4>
+                    
+                    <div style="display: grid; grid-template-columns: repeat({min(3, len(available_params))}, 1fr); gap: 10px; margin-bottom: 15px;">
+                """, unsafe_allow_html=True)
+                
+                for param in available_params:
+                    display_name = param.replace('_', ' ')
+                    
+                    # Add units based on parameter
+                    unit = ""
+                    if param == 'Salinity_dS_m':
+                        unit = "dS/m"
+                        display_name = "Salinity"
+                    elif param == 'Water_Requirement':
+                        unit = "mm"
+                    elif param == 'Disease_Resistance_Score':
+                        unit = "/10"
+                        display_name = "Disease Resistance"
+                    
+                    value = crop_data[param]
+                    
+                    st.markdown(f"""
+                        <div style="background-color: #f0fdf4; padding: 12px; border-radius: 8px; text-align: center;">
+                            <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">{display_name}</p>
+                            <p style="margin: 0; font-weight: 600; color: #16a34a;">{value} {unit}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("</div></div>", unsafe_allow_html=True)
+            
+            # Display disease information if available
+            disease_cols = [col for col in crop_data.index if 'Disease' in col and col != 'Disease_Resistance_Score']
+            
+            if disease_cols:
+                diseases = []
+                
+                for col in disease_cols:
+                    if crop_data[col] != 'None' and str(crop_data[col]) != 'nan':
+                        disease_type = col.replace('Common_Disease(', '').replace(')', '')
+                        diseases.append(f"{crop_data[col]} ({disease_type})")
+                
+                if diseases:
+                    st.markdown(f"""
+                    <div class="card" style="margin-top: 15px; background-color: #fff8f1; border-left: 4px solid #f97316;">
+                        <h4 style="color: #ea580c; font-size: 1.1rem; margin-bottom: 12px;">Disease Information</h4>
+                        <p style="margin: 0 0 10px; color: #4b5563;">Common diseases that affect {selected_rabi_crop}:</p>
+                        <ul style="padding-left: 20px; color: #4b5563; margin-bottom: 0;">
+                    """, unsafe_allow_html=True)
+                    
+                    for disease in diseases:
+                        st.markdown(f"<li style='margin-bottom: 5px;'>{disease}</li>", unsafe_allow_html=True)
+                    
+                    st.markdown("</ul></div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div class="card" style="margin-top: 15px; background-color: #f0fdf4;">
+                        <p style="margin: 0; color: #16a34a; font-weight: 500;">✓ No common diseases recorded for {selected_rabi_crop} in our database.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+# Kharif Crops Page
+def display_kharif_crops(df):
+    st.title("Kharif Crops Analysis ☔")
+    
+    # Introduction with modern styling
+    st.markdown("""
+    <div class="card" style="margin-bottom: 25px;">
+        <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 10px;">Kharif Season Crop Insights</h3>
+        <p style="margin: 0; color: #4b5563;">Kharif crops are sown at the beginning of the monsoon season and harvested at the end of the monsoon season. This page provides specific analysis and insights for Kharif crops.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Filter dataframe for Kharif crops only
+    kharif_df = df[df['Season'] == 'Kharif']
+    
+    # Display error if no Kharif crops found
+    if len(kharif_df) == 0:
+        st.error("No Kharif crops found in the dataset.")
+        return
+    
+    # Create two columns for statistics
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Total Kharif crops count
+        st.markdown(f"""
+        <div class="dashboard-card">
+            <p class="metric-value">{kharif_df['Label'].nunique()}</p>
+            <p class="metric-label">Kharif Crop Varieties</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        # Disease prone percentage
+        if 'Disease_Prone' in kharif_df.columns:
+            disease_prone_pct = kharif_df[kharif_df['Disease_Prone'] == 'Yes'].shape[0] / kharif_df.shape[0] * 100
+            st.markdown(f"""
+            <div class="dashboard-card">
+                <p class="metric-value">{disease_prone_pct:.1f}%</p>
+                <p class="metric-label">Disease Prone</p>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    # Kharif crop distribution
+    st.markdown("""
+    <div class="card">
+        <h3 style="color: #16a34a; font-weight: 600; font-size: 1.2rem; margin-bottom: 15px;">Kharif Crop Distribution</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    fig_dist = px.pie(kharif_df, names='Label', 
+                     title='Distribution of Kharif Crops',
+                     color_discrete_sequence=px.colors.sequential.Blues,
+                     height=400)
+    fig_dist.update_traces(textposition='inside', textinfo='percent+label')
+    fig_dist.update_layout(
+        title_font_size=18,
+        font=dict(family="Inter, sans-serif", size=14),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
+    )
+    st.plotly_chart(fig_dist, use_container_width=True)
+    
+    # Modern tabs for different analyses
+    tab1, tab2, tab3 = st.tabs(["Parameter Analysis", "Disease Analysis", "Recommendations"])
+    
+    # Tab 1: Parameter Analysis
+    with tab1:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Parameter Requirements for Kharif Crops</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Compare soil and environmental parameter requirements across different Kharif crops.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Parameter selection
+        param = st.selectbox("Select Parameter", 
+                           ['Temperature', 'Humidity', 'pH', 'Rainfall', 'N', 'P', 'K'],
+                           key="kharif_param",
+                           format_func=lambda x: {'Temperature': 'Temperature (°C)', 
+                                                'Humidity': 'Humidity (%)', 
+                                                'pH': 'pH Level', 
+                                                'Rainfall': 'Rainfall (mm)',
+                                                'N': 'Nitrogen (N)',
+                                                'P': 'Phosphorus (P)',
+                                                'K': 'Potassium (K)'}[x])
+        
+        # Parameter comparison chart
+        fig_param = px.box(kharif_df, x='Label', y=param,
+                          title=f'{param} Requirements for Kharif Crops',
+                          color='Label',
+                          height=450)
+        fig_param.update_layout(
+            xaxis_title="Crop",
+            yaxis_title=param,
+            showlegend=False
+        )
+        st.plotly_chart(fig_param, use_container_width=True)
+        
+        # Parameter summary table
+        st.subheader("Parameter Summary")
+        
+        # Calculate statistics for each crop and parameter
+        param_summary = kharif_df.groupby('Label')[param].agg(['min', 'max', 'mean', 'median']).reset_index()
+        param_summary.columns = ['Crop', 'Minimum', 'Maximum', 'Average', 'Median']
+        param_summary = param_summary.round(2)
+        
+        # Display summary table with styling
+        st.dataframe(param_summary, use_container_width=True)
+    
+    # Tab 2: Disease Analysis
+    with tab2:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Disease Analysis for Kharif Crops</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Understand disease patterns and susceptibility among Kharif crops.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Check if disease columns exist
+        disease_cols = [col for col in kharif_df.columns if 'Disease' in col]
+        
+        if len(disease_cols) > 0:
+            # Disease prone distribution
+            if 'Disease_Prone' in disease_cols:
+                # Count occurrences
+                disease_prone_counts = kharif_df['Disease_Prone'].value_counts().reset_index()
+                disease_prone_counts.columns = ['Status', 'Count']
+                
+                # Create pie chart
+                fig_disease = px.pie(disease_prone_counts, names='Status', values='Count',
+                                    title='Disease Proneness of Kharif Crops',
+                                    color_discrete_sequence=['#81C784', '#FF8A65'],
+                                    height=350)
+                fig_disease.update_traces(textposition='inside', textinfo='percent+label')
+                st.plotly_chart(fig_disease, use_container_width=True)
+            
+            # Common diseases
+            disease_types = ['Common_Disease(Fungal)', 'Common_Disease(Bacterial)', 'Common_Disease(Viral)']
+            available_types = [col for col in disease_types if col in kharif_df.columns]
+            
+            if available_types:
+                st.subheader("Common Diseases in Kharif Crops")
+                
+                for disease_type in available_types:
+                    # Skip if column doesn't exist
+                    if disease_type not in kharif_df.columns:
+                        continue
+                    
+                    # Get non-None diseases
+                    disease_data = kharif_df[kharif_df[disease_type] != 'None']
+                    
+                    if len(disease_data) > 0:
+                        # Format disease type for display
+                        display_type = disease_type.replace('Common_Disease(', '').replace(')', '')
+                        
+                        st.markdown(f"##### {display_type} Diseases")
+                        
+                        # Count occurrences of each disease
+                        disease_counts = disease_data[disease_type].value_counts().reset_index()
+                        disease_counts.columns = ['Disease', 'Count']
+                        
+                        # Create horizontal bar chart
+                        fig_disease_count = px.bar(disease_counts, 
+                                                 y='Disease', 
+                                                 x='Count',
+                                                 title=f'Common {display_type} Diseases in Kharif Crops',
+                                                 color_discrete_sequence=['#0284c7'],
+                                                 height=max(250, len(disease_counts) * 50))
+                        fig_disease_count.update_layout(xaxis_title="Number of Crops Affected")
+                        st.plotly_chart(fig_disease_count, use_container_width=True)
+                        
+                    else:
+                        display_type = disease_type.replace('Common_Disease(', '').replace(')', '')
+                        st.info(f"No common {display_type.lower()} diseases found for Kharif crops in the dataset.")
+        else:
+            st.info("No disease information available in the dataset.")
+    
+    # Tab 3: Recommendations
+    with tab3:
+        st.markdown("""
+        <div class="card">
+            <h3 style="color: #16a34a; font-size: 1.2rem; margin-bottom: 15px;">Recommendations for Kharif Crops</h3>
+            <p style="margin: 0 0 15px; color: #4b5563;">Best practices and recommendations for growing Kharif crops.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # General recommendations for Kharif crops
+        st.markdown("""
+        <div class="card">
+            <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">General Best Practices</h4>
+            <ul style="padding-left: 20px; color: #4b5563;">
+                <li style="margin-bottom: 8px;">Prepare land well before the onset of monsoon (May-June).</li>
+                <li style="margin-bottom: 8px;">Use drought-resistant varieties in regions with uncertain rainfall.</li>
+                <li style="margin-bottom: 8px;">Implement proper drainage systems to prevent waterlogging.</li>
+                <li style="margin-bottom: 8px;">Monitor for increased pest activity due to high humidity.</li>
+                <li style="margin-bottom: 8px;">Apply balanced fertilizers based on crop stage and soil conditions.</li>
+                <li style="margin-bottom: 8px;">Implement integrated pest management practices to reduce chemical usage.</li>
+                <li style="margin-bottom: 8px;">Provide supplementary irrigation if monsoon is delayed or insufficient.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Crop-specific recommendations
+        st.markdown("""
+        <div class="card" style="margin-top: 20px;">
+            <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">Select a Crop for Specific Recommendations</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Dropdown to select a crop
+        selected_kharif_crop = st.selectbox(
+            "Choose a Kharif crop",
+            options=kharif_df['Label'].unique(),
+            key="kharif_crop_select"
+        )
+        
+        # Display crop-specific info
+        if selected_kharif_crop:
+            crop_data = kharif_df[kharif_df['Label'] == selected_kharif_crop].iloc[0]
+            
+            st.markdown(f"""
+            <div class="card" style="margin-top: 15px;">
+                <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">{selected_kharif_crop} Requirements</h4>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Temperature</p>
+                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['Temperature']}°C</p>
+                    </div>
+                    
+                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">Humidity</p>
+                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['Humidity']}%</p>
+                    </div>
+                    
+                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">pH</p>
+                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['pH']}</p>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">N</p>
+                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['N']} mg/kg</p>
+                    </div>
+                    
+                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">P</p>
+                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['P']} mg/kg</p>
+                    </div>
+                    
+                    <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">K</p>
+                        <p style="margin: 0; font-weight: 600; color: #0284c7;">{crop_data['K']} mg/kg</p>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Show additional parameters if they exist
+            additional_params = ['Salinity_dS_m', 'Water_Requirement', 'Disease_Resistance_Score']
+            available_params = [param for param in additional_params if param in crop_data]
+            
+            if available_params:
+                st.markdown(f"""
+                <div class="card" style="margin-top: 15px;">
+                    <h4 style="color: #16a34a; font-size: 1.1rem; margin-bottom: 12px;">Additional Parameters</h4>
+                    
+                    <div style="display: grid; grid-template-columns: repeat({min(3, len(available_params))}, 1fr); gap: 10px; margin-bottom: 15px;">
+                """, unsafe_allow_html=True)
+                
+                for param in available_params:
+                    display_name = param.replace('_', ' ')
+                    
+                    # Add units based on parameter
+                    unit = ""
+                    if param == 'Salinity_dS_m':
+                        unit = "dS/m"
+                        display_name = "Salinity"
+                    elif param == 'Water_Requirement':
+                        unit = "mm"
+                    elif param == 'Disease_Resistance_Score':
+                        unit = "/10"
+                        display_name = "Disease Resistance"
+                    
+                    value = crop_data[param]
+                    
+                    st.markdown(f"""
+                        <div style="background-color: #f0f9ff; padding: 12px; border-radius: 8px; text-align: center;">
+                            <p style="margin: 0 0 5px; font-size: 0.9rem; color: #4b5563;">{display_name}</p>
+                            <p style="margin: 0; font-weight: 600; color: #0284c7;">{value} {unit}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("</div></div>", unsafe_allow_html=True)
+            
+            # Display disease information if available
+            disease_cols = [col for col in crop_data.index if 'Disease' in col and col != 'Disease_Resistance_Score']
+            
+            if disease_cols:
+                diseases = []
+                
+                for col in disease_cols:
+                    if crop_data[col] != 'None' and str(crop_data[col]) != 'nan':
+                        disease_type = col.replace('Common_Disease(', '').replace(')', '')
+                        diseases.append(f"{crop_data[col]} ({disease_type})")
+                
+                if diseases:
+                    st.markdown(f"""
+                    <div class="card" style="margin-top: 15px; background-color: #fff8f1; border-left: 4px solid #f97316;">
+                        <h4 style="color: #ea580c; font-size: 1.1rem; margin-bottom: 12px;">Disease Information</h4>
+                        <p style="margin: 0 0 10px; color: #4b5563;">Common diseases that affect {selected_kharif_crop}:</p>
+                        <ul style="padding-left: 20px; color: #4b5563; margin-bottom: 0;">
+                    """, unsafe_allow_html=True)
+                    
+                    for disease in diseases:
+                        st.markdown(f"<li style='margin-bottom: 5px;'>{disease}</li>", unsafe_allow_html=True)
+                    
+                    st.markdown("</ul></div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div class="card" style="margin-top: 15px; background-color: #f0f9ff;">
+                        <p style="margin: 0; color: #0284c7; font-weight: 500;">✓ No common diseases recorded for {selected_kharif_crop} in our database.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
 if __name__ == "__main__":
     main()
