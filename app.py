@@ -26,7 +26,11 @@ st.set_page_config(
 # Load data
 @st.cache_data
 def load_data():
-    return load_crop_data()
+    df = load_crop_data()
+    # Add Season column for Rabi/Kharif classification
+    from utils import add_season_to_dataframe
+    df = add_season_to_dataframe(df)
+    return df
 
 # Load recommendation model
 @st.cache_resource
@@ -53,8 +57,8 @@ def main():
         # Use option_menu for navigation
         navigation = option_menu(
             menu_title=None,
-            options=["Dashboard", "Crop Recommendation", "Disease Detection", "Data Insights"],
-            icons=["house-fill", "flower1", "bug-fill", "graph-up"],
+            options=["Dashboard", "Crop Recommendation", "Disease Detection", "Data Insights", "Rabi Crops", "Kharif Crops"],
+            icons=["house-fill", "flower1", "bug-fill", "graph-up", "sun", "cloud-rain"],
             menu_icon="cast",
             default_index=0,
             styles={
@@ -109,6 +113,14 @@ def main():
     # Data Insights Page
     elif navigation == "Data Insights":
         display_data_insights(df)
+    
+    # Rabi Crops Page
+    elif navigation == "Rabi Crops":
+        display_rabi_crops(df)
+    
+    # Kharif Crops Page
+    elif navigation == "Kharif Crops":
+        display_kharif_crops(df)
     
     # Error handling for non-existent navigation
     else:

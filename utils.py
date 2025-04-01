@@ -76,6 +76,63 @@ def preprocess_features(input_features):
     
     return X
 
+def get_crop_season(crop_name):
+    """
+    Classify a crop as Rabi or Kharif.
+    
+    Args:
+        crop_name: Name of the crop
+    
+    Returns:
+        String 'Rabi', 'Kharif', or 'Both' indicating the crop's growing season
+    """
+    # Define crop seasons based on agricultural knowledge
+    rabi_crops = [
+        'Wheat', 'Barley', 'Oat', 'Mustard', 'Peas', 
+        'Garlic', 'Fennel', 'Cumin', 'Coriander',
+        'Potato', 'Onion', 'Cabbage', 'Cauliflower'
+    ]
+    
+    kharif_crops = [
+        'Paddy', 'Rice', 'Maize', 'Jowar', 'Bajra', 
+        'Ragi', 'Soybean', 'Cotton', 'Sugarcane',
+        'Turmeric', 'Brinjal', 'Tomato', 'Chilly',
+        'Okra', 'Bitter Gourd', 'Amaranth'
+    ]
+    
+    both_seasons = [
+        'Linseed', 'Sunflower', 'Alfalfa', 'Guar', 
+        'Castor', 'Beet', 'Guar'
+    ]
+    
+    if crop_name in rabi_crops:
+        return 'Rabi'
+    elif crop_name in kharif_crops:
+        return 'Kharif'
+    elif crop_name in both_seasons:
+        return 'Both'
+    else:
+        # Default to 'Unknown' if the crop is not in our predefined lists
+        return 'Unknown'
+
+def add_season_to_dataframe(df):
+    """
+    Add a 'Season' column to the crop dataset.
+    
+    Args:
+        df: DataFrame containing crop data
+    
+    Returns:
+        DataFrame with added 'Season' column
+    """
+    # Create a copy to avoid modifying the original dataframe
+    df_with_season = df.copy()
+    
+    # Apply the get_crop_season function to each crop in the 'Label' column
+    df_with_season['Season'] = df_with_season['Label'].apply(get_crop_season)
+    
+    return df_with_season
+
 def extract_crop_parameter_ranges(df):
     """
     Extract parameter ranges for each crop.
